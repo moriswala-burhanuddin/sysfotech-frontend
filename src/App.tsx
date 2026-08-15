@@ -19,11 +19,12 @@ import CourseDetail from "./pages/CourseDetail";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import Terms from "./pages/Terms";
 import Login from "./pages/Login";
-import SignUp from "./pages/SignUp";
+import MagicLinkVerify from "./pages/MagicLinkVerify";
 import Checkout from "./pages/Checkout";
-import Invoice from "./pages/Invoice";
 import PaymentSuccess from "./pages/PaymentSuccess";
 import StudentDashboard from "./pages/StudentDashboard";
+import AdminLogin from "./pages/admin/AdminLogin";
+import AdminDashboard from "./pages/admin/AdminDashboard";
 import { useScrollToTop } from "./hooks/use-scroll-to-top";
 
 const queryClient = new QueryClient();
@@ -47,10 +48,8 @@ const AppRoutes = () => {
       <Route path="/checkout/:slug" element={<Checkout />} />
       <Route path="/payment-success" element={<PaymentSuccess />} />
       <Route path="/dashboard" element={<StudentDashboard />} />
-      <Route path="/invoice" element={<Invoice />} />
-
       <Route path="/login" element={<Login />} />
-      <Route path="/signup" element={<SignUp />} />
+      <Route path="/verify" element={<MagicLinkVerify />} />
 
       <Route path="/projects/:slug" element={<ProjectDetail />} />
       
@@ -67,6 +66,9 @@ import Lenis from "lenis";
 
 const App = () => {
   useEffect(() => {
+    // Don't use Lenis smooth scroll on admin pages — it breaks native overflow scrolling
+    if (window.location.pathname.startsWith('/admin-portal')) return;
+
     const lenis = new Lenis({
       duration: 1.2,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
@@ -94,10 +96,19 @@ const App = () => {
         <Toaster />
         <Sonner />
         <BrowserRouter>
-          <Layout>
-            <CookieConsent />
-            <AppRoutes />
-          </Layout>
+          <Routes>
+            {/* Admin Routes */}
+            <Route path="/admin-portal/login" element={<AdminLogin />} />
+            <Route path="/admin-portal/*" element={<AdminDashboard />} />
+
+            {/* Public Routes */}
+            <Route path="*" element={
+              <Layout>
+                <CookieConsent />
+                <AppRoutes />
+              </Layout>
+            } />
+          </Routes>
         </BrowserRouter>
       </TooltipProvider>
     </QueryClientProvider>

@@ -159,7 +159,7 @@ const StudentDashboard = () => {
                         <p className="font-medium text-sm text-slate-900 line-clamp-1">{enrollment.course.title}</p>
                         <div className="flex justify-between items-center mt-1">
                           <p className="text-xs text-muted-foreground">{enrollment.date}</p>
-                          <p className="font-bold text-sm">${enrollment.amount}</p>
+                          <p className="font-bold text-sm">£{enrollment.amount}</p>
                         </div>
                         <div className="flex justify-between items-center mt-3">
                           <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">
@@ -169,9 +169,29 @@ const StudentDashboard = () => {
                             variant="link" 
                             size="sm" 
                             className="h-auto p-0 text-orange-primary"
-                            onClick={() => navigate("/invoice")}
+                            onClick={async () => {
+                              const token = localStorage.getItem("magic_link_token");
+                              if (!token || !enrollment.id) return;
+                              try {
+                                const res = await fetch(`http://127.0.0.1:8000/api/student/invoice/${enrollment.id}/`, {
+                                  headers: { 'Authorization': `Bearer ${token}` }
+                                });
+                                if (!res.ok) throw new Error("Failed to download");
+                                const blob = await res.blob();
+                                const url = window.URL.createObjectURL(blob);
+                                const a = document.createElement('a');
+                                a.href = url;
+                                a.download = `INV-${String(enrollment.id).padStart(5, '0')}.pdf`;
+                                document.body.appendChild(a);
+                                a.click();
+                                a.remove();
+                                window.URL.revokeObjectURL(url);
+                              } catch {
+                                console.error("Invoice download failed");
+                              }
+                            }}
                           >
-                            <FileText className="mr-1 h-3 w-3" /> View receipt
+                            <FileText className="mr-1 h-3 w-3" /> Download receipt
                           </Button>
                         </div>
                       </div>

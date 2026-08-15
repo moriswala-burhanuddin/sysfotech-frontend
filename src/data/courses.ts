@@ -108,7 +108,7 @@ export const courses: Course[] = [
     metaTitle:
       "Artificial Intelligence Course UK | AI Certification London | Sysfotech",
     metaDescription:
-      "Enrol in our Professional AI Certification Course in London, UK. Live online & classroom sessions. Practical training from beginner to advanced level. 1 Week FREE Demo available.",
+      "Enrol in our Professional AI Certification Course in London, UK. Live online & classroom sessions. Practical training from beginner to advanced level. 1-Day Free Demo available.",
     metaKeywords:
       "artificial intelligence course uk, ai certification london, ai training programme, learn ai uk, ai course online, sysfotech ai",
   },
@@ -195,7 +195,7 @@ export const courses: Course[] = [
     metaTitle:
       "Data Science Course UK | Data Analytics Certification London | Sysfotech",
     metaDescription:
-      "Professional Data Science Certification in London, UK. Learn Python, SQL, Tableau & Machine Learning with live practical sessions. FREE 1-week demo available.",
+      "Professional Data Science Certification in London, UK. Learn Python, SQL, Tableau & Machine Learning with live practical sessions. FREE 1-day demo available.",
     metaKeywords:
       "data science course uk, data analytics certification london, learn data science, python data science, sysfotech data science",
   },
@@ -282,7 +282,7 @@ export const courses: Course[] = [
     metaTitle:
       "Cyber Security Course UK | Ethical Hacking Certification London | Sysfotech",
     metaDescription:
-      "Professional Cyber Security Certification in London, UK. Learn ethical hacking, network security & GDPR compliance. Live practical sessions with FREE 1-week demo.",
+      "Professional Cyber Security Certification in London, UK. Learn ethical hacking, network security & GDPR compliance. Live practical sessions with FREE 1-day demo.",
     metaKeywords:
       "cyber security course uk, ethical hacking london, cyber security certification, network security training, sysfotech cyber security",
   },
@@ -369,7 +369,7 @@ export const courses: Course[] = [
     metaTitle:
       "Machine Learning Course UK | ML Certification London | Sysfotech",
     metaDescription:
-      "Professional Machine Learning Certification in London, UK. Learn ML algorithms, model building & deployment with live practical sessions. FREE 1-week demo.",
+      "Professional Machine Learning Certification in London, UK. Learn ML algorithms, model building & deployment with live practical sessions. FREE 1-day demo.",
     metaKeywords:
       "machine learning course uk, ml certification london, learn machine learning, python ml course, sysfotech machine learning",
   },
@@ -456,7 +456,7 @@ export const courses: Course[] = [
     metaTitle:
       "Microsoft Power BI Course UK | Power BI Certification London | Sysfotech",
     metaDescription:
-      "Professional Power BI Certification in London, UK. Learn DAX, data modelling & dashboard design with live practical sessions. FREE 1-week demo available.",
+      "Professional Power BI Certification in London, UK. Learn DAX, data modelling & dashboard design with live practical sessions. FREE 1-day demo available.",
     metaKeywords:
       "power bi course uk, power bi certification london, learn power bi, microsoft power bi training, sysfotech power bi",
   }, */

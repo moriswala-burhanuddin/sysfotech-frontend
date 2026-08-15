@@ -57,11 +57,22 @@ const StripeCheckoutForm = ({ course, studentName, email, phone, onSuccess, isPr
     setIsProcessing(true);
 
     try {
+      const token = localStorage.getItem("magic_link_token");
+      const headers: HeadersInit = { 'Content-Type': 'application/json' };
+      if (token) headers['Authorization'] = `Bearer ${token}`;
+
       // 1. Create PaymentIntent on the backend
       const res = await fetch('http://127.0.0.1:8000/api/create-payment-intent/', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: studentName, email, phone, course_slug: course.slug, course_title: course.title })
+        headers,
+        body: JSON.stringify({ 
+          name: studentName, 
+          email, 
+          phone, 
+          course_slug: course.slug, 
+          course_title: course.title,
+          coupon_code: course.appliedCoupon?.code 
+        })
       });
       const data = await res.json();
 
@@ -112,7 +123,7 @@ const StripeCheckoutForm = ({ course, studentName, email, phone, onSuccess, isPr
         }} />
       </div>
       <Button type="submit" className="w-full text-lg h-12" disabled={!stripe || isProcessing}>
-        {isProcessing ? <div className="h-5 w-5 animate-spin rounded-full border-b-2 border-white" /> : `Pay $${course.price}`}
+        {isProcessing ? <div className="h-5 w-5 animate-spin rounded-full border-b-2 border-white" /> : `Pay £${course.finalPrice || course.price}`}
       </Button>
     </form>
   );
@@ -130,17 +141,28 @@ const PayPalCheckout = ({ course, studentName, email, phone, onSuccess }: any) =
            throw new Error("Missing info");
          }
          
+         const token = localStorage.getItem("magic_link_token");
+         const headers: HeadersInit = { 'Content-Type': 'application/json' };
+         if (token) headers['Authorization'] = `Bearer ${token}`;
+         
          const res = await fetch('http://127.0.0.1:8000/api/create-paypal-order/', {
            method: 'POST',
-           headers: { 'Content-Type': 'application/json' },
-           body: JSON.stringify({ name: studentName, email, phone, course_slug: course.slug, course_title: course.title })
+           headers,
+           body: JSON.stringify({ 
+             name: studentName, 
+             email, 
+             phone, 
+             course_slug: course.slug, 
+             course_title: course.title,
+             coupon_code: course.appliedCoupon?.code
+           })
          });
          const result = await res.json();
          if (!res.ok) throw new Error(result.error);
          
          return actions.order.create({
             intent: "CAPTURE",
-            purchase_units: [{ amount: { currency_code: "USD", value: course.price.toString() } }]
+            purchase_units: [{ amount: { currency_code: "USD", value: (course.finalPrice || course.price).toString() } }]
          });
       }}
       onApprove={async (data, actions) => {
@@ -168,10 +190,39 @@ const Checkout = () => {
   const [studentName, setStudentName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  
+  const [couponCodeInput, setCouponCodeInput] = useState("");
+  const [appliedCoupon, setAppliedCoupon] = useState<{code: string, discount_percentage: number} | null>(null);
+  const [isApplyingCoupon, setIsApplyingCoupon] = useState(false);
+  const [couponError, setCouponError] = useState("");
   
   const currentDate = new Date().toLocaleDateString('en-US', {
     year: 'numeric', month: 'long', day: 'numeric'
   });
+
+  useEffect(() => {
+    const fetchStudent = async () => {
+      const token = localStorage.getItem("magic_link_token");
+      if (!token) return;
+      setIsLoggedIn(true);
+      try {
+        const res = await fetch('http://127.0.0.1:8000/api/student/enrollments/', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (res.ok) {
+          const data = await res.json();
+          if (data.student) {
+            setStudentName(data.student.name || "");
+            setEmail(data.student.email || "");
+          }
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    fetchStudent();
+  }, []);
 
   useEffect(() => {
     if (slug && mockCourses[slug as keyof typeof mockCourses]) {
@@ -211,6 +262,40 @@ const Checkout = () => {
     });
   };
 
+  const handleApplyCoupon = async () => {
+    if (!couponCodeInput) return;
+    setIsApplyingCoupon(true);
+    setCouponError("");
+    try {
+      const res = await fetch('http://127.0.0.1:8000/api/coupons/validate/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code: couponCodeInput })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Invalid coupon code.");
+      
+      setAppliedCoupon({ code: data.code, discount_percentage: parseFloat(data.discount_percentage) });
+      toast({ title: "Coupon Applied!", description: `${data.discount_percentage}% discount applied to your order.` });
+      setCouponCodeInput("");
+    } catch (err: any) {
+      setCouponError(err.message || "Failed to validate coupon.");
+    } finally {
+      setIsApplyingCoupon(false);
+    }
+  };
+
+  const removeCoupon = () => {
+    setAppliedCoupon(null);
+    setCouponError("");
+  };
+
+  const discountAmount = appliedCoupon && course ? (course.price * (appliedCoupon.discount_percentage / 100)) : 0;
+  const finalPrice = course ? (course.price - discountAmount).toFixed(2) : "0.00";
+
+  // Pass applied coupon to checkout components via course object
+  const courseWithCoupon = course ? { ...course, appliedCoupon, finalPrice } : null;
+
   if (!course) return null;
 
   return (
@@ -249,17 +334,22 @@ const Checkout = () => {
                         placeholder="John Doe" 
                         value={studentName}
                         onChange={(e) => setStudentName(e.target.value)}
+                        disabled={isLoggedIn}
                         required 
                       />
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="email">Email Address <span className="text-red-500">*</span></Label>
+                      <p className="text-[0.8rem] text-muted-foreground pb-1 leading-tight">
+                        We will send your course receipt and permanent course access link to this email address. Please ensure it is entered correctly.
+                      </p>
                       <Input 
                         id="email" 
                         type="email" 
                         placeholder="john@example.com" 
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
+                        disabled={isLoggedIn}
                         required 
                       />
                     </div>
@@ -331,7 +421,7 @@ const Checkout = () => {
                             >
                               <Elements stripe={stripePromise}>
                                  <StripeCheckoutForm 
-                                    course={course} 
+                                    course={courseWithCoupon} 
                                     studentName={studentName} 
                                     email={email} 
                                     phone={phone} 
@@ -345,7 +435,7 @@ const Checkout = () => {
                         </div>
                       </div>
 
-                      {/* PayPal Option */}
+                      {/* PayPal Option - temporarily hidden
                       <div className={`relative flex items-start space-x-3 border p-4 rounded-lg cursor-pointer transition-colors ${paymentMethod === 'paypal' ? 'border-primary bg-primary/5' : 'border-border hover:bg-muted/50'}`} onClick={() => setPaymentMethod('paypal')}>
                         <RadioGroupItem value="paypal" id="paypal" className="mt-1" />
                         <div className="flex-1">
@@ -361,7 +451,7 @@ const Checkout = () => {
                             >
                               <PayPalScriptProvider options={{ clientId: import.meta.env.VITE_PAYPAL_CLIENT_ID || "test" }}>
                                 <PayPalCheckout 
-                                   course={course} 
+                                   course={courseWithCoupon} 
                                    studentName={studentName} 
                                    email={email} 
                                    phone={phone} 
@@ -372,6 +462,7 @@ const Checkout = () => {
                           )}
                         </div>
                       </div>
+                      */}
                     </RadioGroup>
                 </CardContent>
                 <CardFooter className="bg-muted/30 border-t p-6 flex-col items-start gap-4">
@@ -411,17 +502,52 @@ const Checkout = () => {
                   <div className="space-y-2">
                     <div className="flex justify-between text-sm">
                       <span className="text-muted-foreground">Original Price</span>
-                      <span>${course.price}</span>
+                      <span className={appliedCoupon ? "line-through text-muted-foreground" : ""}>£{course.price}</span>
                     </div>
-                    <div className="flex justify-between text-sm">
-                      <span className="text-muted-foreground">Discount</span>
-                      <span className="text-green-500">-$0.00</span>
-                    </div>
+                    {appliedCoupon && (
+                      <div className="flex justify-between text-sm font-medium text-green-600">
+                        <span>Discount ({appliedCoupon.discount_percentage}%)</span>
+                        <span>-£{discountAmount.toFixed(2)}</span>
+                      </div>
+                    )}
                     <Separator className="my-2" />
                     <div className="flex justify-between font-bold text-lg">
                       <span>Total</span>
-                      <span>${course.price}</span>
+                      <span>£{finalPrice}</span>
                     </div>
+                  </div>
+
+                  <div className="pt-4 border-t border-border/50">
+                    <Label htmlFor="coupon" className="text-xs text-muted-foreground mb-2 block">Have a coupon code?</Label>
+                    {appliedCoupon ? (
+                      <div className="flex items-center justify-between bg-green-50 text-green-700 px-3 py-2 rounded-md text-sm border border-green-200">
+                        <div className="flex items-center gap-2">
+                          <CheckCircle2 className="h-4 w-4" />
+                          <span className="font-semibold">{appliedCoupon.code}</span> applied
+                        </div>
+                        <button onClick={removeCoupon} className="text-green-700 hover:text-green-900 font-medium text-xs underline">Remove</button>
+                      </div>
+                    ) : (
+                      <div className="space-y-2">
+                        <div className="flex gap-2">
+                          <Input 
+                            id="coupon" 
+                            placeholder="Enter code (e.g. SUMMER10)" 
+                            value={couponCodeInput}
+                            onChange={(e) => setCouponCodeInput(e.target.value)}
+                            className="uppercase"
+                          />
+                          <Button 
+                            variant="secondary" 
+                            onClick={handleApplyCoupon} 
+                            disabled={isApplyingCoupon || !couponCodeInput}
+                          >
+                            {isApplyingCoupon ? "..." : "Apply"}
+                          </Button>
+                        </div>
+                        {couponError && <p className="text-xs text-red-500">{couponError}</p>}
+                      </div>
+                    )}
                   </div>
 
                   <div className="space-y-3 pt-4">

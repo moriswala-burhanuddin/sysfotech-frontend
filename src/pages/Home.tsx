@@ -95,7 +95,7 @@ const HeroSection = () => {
                 <Link to="/contact">Initialize Project</Link>
               </Button>
               <Button asChild variant="outline" className="h-14 px-8 text-lg rounded-full border-orange-500 text-orange-400 hover:bg-orange-500 hover:text-white hover:scale-105 transition-all font-bold tracking-tight">
-                <Link to="/courses">1 Week FREE Demo</Link>
+                <Link to="/courses">1-Day FREE Demo</Link>
               </Button>
             </div>
           </motion.div>
@@ -371,7 +371,7 @@ const Home = () => {
             </div>
             <div className="flex-shrink-0 flex flex-col sm:flex-row gap-4 w-full md:w-auto">
               <Button asChild size="lg" className="bg-white text-orange-600 hover:bg-gray-100 font-bold text-lg h-14 px-8 rounded-full shadow-xl w-full sm:w-auto hover:scale-105 transition-transform">
-                <Link to="/courses">1 Week FREE Demo</Link>
+                <Link to="/courses">1-Day FREE Demo</Link>
               </Button>
             </div>
           </div>

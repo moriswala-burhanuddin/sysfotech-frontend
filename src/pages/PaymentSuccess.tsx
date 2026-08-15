@@ -11,6 +11,7 @@ const PaymentSuccess = () => {
   const { toast } = useToast();
   const [status, setStatus] = useState<"pending" | "verified" | "error">("pending");
   const [courseTitle, setCourseTitle] = useState("");
+  const [latestEnrollmentId, setLatestEnrollmentId] = useState<number | null>(null);
 
   useEffect(() => {
     // 1. Get token from state (passed by Checkout) or localStorage
@@ -42,7 +43,9 @@ const PaymentSuccess = () => {
         const paidCourses = data.enrollments.filter((e: any) => e.status === 'paid');
         
         if (paidCourses.length > 0) {
-          setCourseTitle(paidCourses[paidCourses.length - 1].course.title);
+          const latest = paidCourses[paidCourses.length - 1];
+          setCourseTitle(latest.course.title);
+          setLatestEnrollmentId(latest.id);
           setStatus("verified");
         } else {
           // If not paid yet, keep polling
@@ -97,7 +100,7 @@ const PaymentSuccess = () => {
             </CardHeader>
             <CardContent className="space-y-4">
               <p className="text-sm text-muted-foreground mb-6">
-                We've also sent an enrollment confirmation and receipt to your email address.
+                We've sent your PDF invoice and course access link to your email address.
               </p>
               
               <Button 
@@ -110,11 +113,32 @@ const PaymentSuccess = () => {
               
               <Button 
                 variant="outline" 
-                onClick={() => navigate("/invoice", { state: location.state })} 
+                onClick={async () => {
+                  if (!latestEnrollmentId) return;
+                  const token = localStorage.getItem("magic_link_token");
+                  if (!token) return;
+                  try {
+                    const res = await fetch(`http://127.0.0.1:8000/api/student/invoice/${latestEnrollmentId}/`, {
+                      headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    if (!res.ok) throw new Error("Failed to download");
+                    const blob = await res.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `INV-${String(latestEnrollmentId).padStart(5, '0')}.pdf`;
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+                    window.URL.revokeObjectURL(url);
+                  } catch {
+                    console.error("Invoice download failed");
+                  }
+                }}
                 className="w-full h-12"
               >
                 <FileText className="mr-2 h-4 w-4" />
-                View Receipt
+                Download Receipt
               </Button>
             </CardContent>
           </>

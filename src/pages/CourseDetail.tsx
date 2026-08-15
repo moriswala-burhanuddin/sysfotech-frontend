@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import {
   Clock,
@@ -20,6 +21,37 @@ const CourseDetail = () => {
   const { slug } = useParams<{ slug: string }>();
   const course = slug ? getCourseBySlug(slug) : undefined;
   const otherCourses = courses.filter((c) => c.slug !== course.slug);
+  
+  const [isEnrolled, setIsEnrolled] = useState(false);
+  const [isLoadingStatus, setIsLoadingStatus] = useState(true);
+
+  useEffect(() => {
+    const checkEnrollment = async () => {
+      const token = localStorage.getItem("magic_link_token");
+      if (!token || !course) {
+        setIsLoadingStatus(false);
+        return;
+      }
+      try {
+        const res = await fetch('http://127.0.0.1:8000/api/student/enrollments/', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (res.ok) {
+          const data = await res.json();
+          if (data.enrollments && data.enrollments.some((e: any) => e.course.slug === course.slug)) {
+            setIsEnrolled(true);
+          }
+        }
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setIsLoadingStatus(false);
+      }
+    };
+    checkEnrollment();
+  }, [course]);
+
+  if (!course) return <NotFound />;
 
   return (
     <>
@@ -70,10 +102,6 @@ const CourseDetail = () => {
 
               {/* Quick Stats Grid */}
               <div className="flex flex-wrap gap-4 mt-8 text-sm font-medium">
-                <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm">
-                  <Clock className="w-4 h-4 text-orange-primary" />
-                  3-6 Months
-                </div>
                 <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm">
                   <BookOpen className="w-4 h-4 text-orange-primary" />
                   {course.level}
@@ -201,15 +229,24 @@ const CourseDetail = () => {
                   </div>
 
                   <div className="mb-6">
-                    <Button asChild className="w-full text-lg h-14 bg-green-600 hover:bg-green-700 text-white shadow-lg shadow-green-600/20 group rounded-xl">
-                      <Link to={`/checkout/${course.slug}`}>
-                        <Sparkles className="mr-2 h-5 w-5" />
-                        Buy Course Securely
-                        <span className="ml-2 bg-white/20 px-2 py-1 rounded text-sm group-hover:bg-white/30 transition-colors">
-                          £{course.price || '99.99'}
-                        </span>
-                      </Link>
-                    </Button>
+                    {isEnrolled ? (
+                      <Button asChild className="w-full text-lg h-14 bg-slate-200 hover:bg-slate-300 text-slate-700 shadow-sm group rounded-xl">
+                        <Link to="/dashboard">
+                          <CheckCircle2 className="mr-2 h-5 w-5 text-green-600" />
+                          Already Enrolled - Go to Dashboard
+                        </Link>
+                      </Button>
+                    ) : (
+                      <Button asChild className="w-full text-lg h-14 bg-green-600 hover:bg-green-700 text-white shadow-lg shadow-green-600/20 group rounded-xl">
+                        <Link to={`/checkout/${course.slug}`}>
+                          <Sparkles className="mr-2 h-5 w-5" />
+                          Buy Course Securely
+                          <span className="ml-2 bg-white/20 px-2 py-1 rounded text-sm group-hover:bg-white/30 transition-colors">
+                            £{course.price || '99.99'}
+                          </span>
+                        </Link>
+                      </Button>
+                    )}
                     <p className="text-xs text-center text-slate-500 mt-2">
                       Secured by Stripe & PayPal. Lifetime access included.
                     </p>

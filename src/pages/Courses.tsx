@@ -182,12 +182,7 @@ const Courses = () => {
                             </ul>
                           )}
 
-                          {/* Bottom Info & CTA */}
-                          <div className="pt-6 border-t border-slate-100 flex items-center justify-between mt-auto">
-                            <div className="flex items-center gap-2 text-sm font-medium text-slate-600">
-                              <Clock className="w-4 h-4 text-orange-primary" />
-                              3-6 Months
-                            </div>
+                          <div className="pt-6 border-t border-slate-100 flex items-center justify-end mt-auto">
                             <div className="flex items-center gap-1 font-semibold text-orange-primary group-hover:gap-2 transition-all">
                               View Syllabus <ArrowRight className="w-4 h-4" />
                             </div>
@@ -288,12 +283,7 @@ const Courses = () => {
                             </ul>
                           )}
 
-                          {/* Bottom Info & CTA */}
-                          <div className="pt-6 border-t border-slate-100 flex items-center justify-between mt-auto">
-                            <div className="flex items-center gap-2 text-sm font-medium text-slate-600">
-                              <Clock className="w-4 h-4 text-orange-primary" />
-                              3-6 Months
-                            </div>
+                          <div className="pt-6 border-t border-slate-100 flex items-center justify-end mt-auto">
                             <div className="flex items-center gap-1 font-semibold text-orange-primary group-hover:gap-2 transition-all">
                               View Syllabus <ArrowRight className="w-4 h-4" />
                             </div>
@@ -359,7 +349,7 @@ const Courses = () => {
                   <Calendar className="w-6 h-6 text-orange-primary" />
                 </div>
                 <h3 className="text-lg font-semibold mb-2">Flexible Course Pathways</h3>
-                <p className="text-slate-400 text-sm">Attend our fast-track 3-month certificate programme or the detailed 6-month advanced training syllabus.</p>
+                <p className="text-slate-400 text-sm">Attend our flexible, expert-led certificate programmes designed around your schedule.</p>
               </div>
 
               <div className="flex flex-col items-center text-center px-6 pt-8 md:pt-0">
@@ -408,7 +398,7 @@ const Courses = () => {
         <section className="py-24 bg-orange-primary relative overflow-hidden text-center text-white">
           <div className="container relative z-10 max-w-4xl mx-auto px-6">
             <h2 className="text-4xl font-extrabold mb-6">
-              Claim Your Free 1-Week Demo Class
+              Claim Your Free 1-Day Demo Class
             </h2>
             <p className="text-orange-50 text-xl mb-10 max-w-2xl mx-auto">
               Register now to trial our live classroom training syllabus. There is no commitment required.

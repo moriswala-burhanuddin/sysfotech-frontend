@@ -206,24 +206,11 @@ export const CourseRegistrationForm = ({ preSelectedCourse, onSuccess }: CourseR
 
   const [formData, setFormData] = useState({
     fullName: "",
-    dateOfBirth: "",
     email: "",
     mobile: "",
-    address: "",
-    city: "",
-    postcode: "",
-    currentStatus: [] as string[],
-    companyName: "",
-    jobRole: "",
     selectedCourses: preSelectedCourse ? [preSelectedCourse] : ([] as string[]),
-    learningMode: "",
-    courseDuration: "",
-    experienceLevel: "",
-    reasons: [] as string[],
-    hearAboutUs: [] as string[],
     wantDemo: "",
-    demoBatch: "",
-    demoTime: "",
+    demoDate: "",
     consent: false,
   });
 
@@ -261,10 +248,10 @@ export const CourseRegistrationForm = ({ preSelectedCourse, onSuccess }: CourseR
     if (formData.selectedCourses.length === 0) {
       toast({
         title: "Course Selection Required",
-        description: "Please select at least one course in Section 3.",
+        description: "Please select at least one course.",
         variant: "destructive",
       });
-      setOpenSection(2);
+      setOpenSection(1);
       return;
     }
 
@@ -274,7 +261,7 @@ export const CourseRegistrationForm = ({ preSelectedCourse, onSuccess }: CourseR
         description: "Please agree to receive course information before submitting.",
         variant: "destructive",
       });
-      setOpenSection(5);
+      setOpenSection(3);
       return;
     }
 
@@ -289,24 +276,11 @@ export const CourseRegistrationForm = ({ preSelectedCourse, onSuccess }: CourseR
         },
         body: JSON.stringify({
           "Full Name": formData.fullName,
-          "Date of Birth": formData.dateOfBirth,
           "Email": formData.email,
           "Mobile (WhatsApp)": formData.mobile,
-          "Address": formData.address,
-          "City": formData.city,
-          "Postcode": formData.postcode,
-          "Current Status": formData.currentStatus.join(", "),
-          "Company Name": formData.companyName,
-          "Job Role": formData.jobRole,
           "Selected Courses": formData.selectedCourses.join(", "),
-          "Learning Mode": formData.learningMode,
-          "Course Duration": formData.courseDuration,
-          "Experience Level": formData.experienceLevel,
-          "Reasons for Enrolling": formData.reasons.join(", "),
-          "Hear About Us": formData.hearAboutUs.join(", "),
           "Wants Free Demo": formData.wantDemo,
-          "Demo Batch": formData.demoBatch,
-          "Demo Time": formData.demoTime,
+          "Demo Date": formData.demoDate,
           "Consent Given": formData.consent ? "Yes" : "No",
         }),
       });
@@ -319,24 +293,11 @@ export const CourseRegistrationForm = ({ preSelectedCourse, onSuccess }: CourseR
 
         setFormData({
           fullName: "",
-          dateOfBirth: "",
           email: "",
           mobile: "",
-          address: "",
-          city: "",
-          postcode: "",
-          currentStatus: [],
-          companyName: "",
-          jobRole: "",
           selectedCourses: preSelectedCourse ? [preSelectedCourse] : [],
-          learningMode: "",
-          courseDuration: "",
-          experienceLevel: "",
-          reasons: [],
-          hearAboutUs: [],
           wantDemo: "",
-          demoBatch: "",
-          demoTime: "",
+          demoDate: "",
           consent: false,
         });
         setOpenSection(0);
@@ -386,32 +347,18 @@ export const CourseRegistrationForm = ({ preSelectedCourse, onSuccess }: CourseR
               className="h-12 rounded-lg border-slate-200 focus:border-orange-primary focus:ring-orange-primary/20"
             />
           </div>
-          <div className="grid sm:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1.5">
-                Date of Birth
-              </label>
-              <Input
-                type="date"
-                name="dateOfBirth"
-                value={formData.dateOfBirth}
-                onChange={handleInputChange}
-                className="h-12 rounded-lg border-slate-200 focus:border-orange-primary focus:ring-orange-primary/20"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1.5">
-                Email Address *
-              </label>
-              <Input
-                type="email"
-                name="email"
-                value={formData.email}
-                onChange={handleInputChange}
-                placeholder="your@email.com"
-                className="h-12 rounded-lg border-slate-200 focus:border-orange-primary focus:ring-orange-primary/20"
-              />
-            </div>
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-1.5">
+              Email Address *
+            </label>
+            <Input
+              type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleInputChange}
+              placeholder="your@email.com"
+              className="h-12 rounded-lg border-slate-200 focus:border-orange-primary focus:ring-orange-primary/20"
+            />
           </div>
           <div>
             <label className="block text-sm font-medium text-slate-700 mb-1.5">
@@ -425,109 +372,16 @@ export const CourseRegistrationForm = ({ preSelectedCourse, onSuccess }: CourseR
               className="h-12 rounded-lg border-slate-200 focus:border-orange-primary focus:ring-orange-primary/20"
             />
           </div>
-          <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1.5">
-              Current Address
-            </label>
-            <Input
-              name="address"
-              value={formData.address}
-              onChange={handleInputChange}
-              placeholder="Street details"
-              className="h-12 rounded-lg border-slate-200 focus:border-orange-primary focus:ring-orange-primary/20"
-            />
-          </div>
-          <div className="grid sm:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1.5">
-                City
-              </label>
-              <Input
-                name="city"
-                value={formData.city}
-                onChange={handleInputChange}
-                placeholder="London"
-                className="h-12 rounded-lg border-slate-200 focus:border-orange-primary focus:ring-orange-primary/20"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1.5">
-                Postcode
-              </label>
-              <Input
-                name="postcode"
-                value={formData.postcode}
-                onChange={handleInputChange}
-                placeholder="Postcode"
-                className="h-12 rounded-lg border-slate-200 focus:border-orange-primary focus:ring-orange-primary/20"
-              />
-            </div>
-          </div>
         </div>
       </FormSection>
 
-      {/* Step 2: Employment Status */}
-      <FormSection
-        title="Employment Status"
-        step={2}
-        icon={<GraduationCap className="w-4 h-4 text-slate-500" />}
-        isOpen={openSection === 1}
-        onToggle={() => setOpenSection(openSection === 1 ? -1 : 1)}
-        isCompleted={formData.currentStatus.length > 0}
-      >
-        <div className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-slate-700 mb-3">
-              Current Professional Status
-            </label>
-            <CheckboxGroup
-              options={[
-                { label: "Student", value: "Student" },
-                { label: "Employed", value: "Employed" },
-                { label: "Self-Employed", value: "Self-Employed" },
-                { label: "Business Owner", value: "Business Owner" },
-                { label: "Looking for Work", value: "Looking for Work" },
-              ]}
-              selected={formData.currentStatus}
-              onChange={(vals) => handleCheckboxChange("currentStatus", vals)}
-            />
-          </div>
-          <div className="grid sm:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1.5">
-                Company Name (if applicable)
-              </label>
-              <Input
-                name="companyName"
-                value={formData.companyName}
-                onChange={handleInputChange}
-                placeholder="Employer"
-                className="h-12 rounded-lg border-slate-200 focus:border-orange-primary focus:ring-orange-primary/20"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1.5">
-                Current Job Role
-              </label>
-              <Input
-                name="jobRole"
-                value={formData.jobRole}
-                onChange={handleInputChange}
-                placeholder="Position"
-                className="h-12 rounded-lg border-slate-200 focus:border-orange-primary focus:ring-orange-primary/20"
-              />
-            </div>
-          </div>
-        </div>
-      </FormSection>
-
-      {/* Step 3: Course Selection */}
+      {/* Step 2: Course Selection */}
       <FormSection
         title="Course Selection"
-        step={3}
+        step={2}
         icon={<Briefcase className="w-4 h-4 text-slate-500" />}
-        isOpen={openSection === 2}
-        onToggle={() => setOpenSection(openSection === 2 ? -1 : 2)}
+        isOpen={openSection === 1}
+        onToggle={() => setOpenSection(openSection === 1 ? -1 : 1)}
         isCompleted={formData.selectedCourses.length > 0}
       >
         <div className="space-y-4">
@@ -542,114 +396,22 @@ export const CourseRegistrationForm = ({ preSelectedCourse, onSuccess }: CourseR
               columns={2}
             />
           </div>
-
-          <div className="grid sm:grid-cols-3 gap-4 border-t border-slate-100 pt-4">
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1.5">
-                Learning Mode
-              </label>
-              <RadioGroup
-                name="learningMode"
-                options={[
-                  { label: "Live Online", value: "Live Online" },
-                  { label: "Classroom", value: "Classroom" },
-                ]}
-                selected={formData.learningMode}
-                onChange={(val) => setFormData((prev) => ({ ...prev, learningMode: val }))}
-                columns={1}
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1.5">
-                Duration
-              </label>
-              <RadioGroup
-                name="courseDuration"
-                options={[
-                  { label: "3 Months", value: "3 Months" },
-                  { label: "6 Months", value: "6 Months" },
-                ]}
-                selected={formData.courseDuration}
-                onChange={(val) => setFormData((prev) => ({ ...prev, courseDuration: val }))}
-                columns={1}
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1.5">
-                Experience Level
-              </label>
-              <RadioGroup
-                name="experienceLevel"
-                options={[
-                  { label: "Beginner", value: "Beginner" },
-                  { label: "Intermediate", value: "Intermediate" },
-                  { label: "Advanced", value: "Advanced" },
-                ]}
-                selected={formData.experienceLevel}
-                onChange={(val) => setFormData((prev) => ({ ...prev, experienceLevel: val }))}
-                columns={1}
-              />
-            </div>
-          </div>
         </div>
       </FormSection>
 
-      {/* Step 4: Referral Source */}
+      {/* Step 3: Demo Session */}
       <FormSection
-        title="About You"
-        step={4}
-        icon={<Compass className="w-4 h-4 text-slate-500" />}
-        isOpen={openSection === 3}
-        onToggle={() => setOpenSection(openSection === 3 ? -1 : 3)}
-        isCompleted={formData.reasons.length > 0 || formData.hearAboutUs.length > 0}
-      >
-        <div className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-slate-700 mb-3">
-              Why are you taking this course?
-            </label>
-            <CheckboxGroup
-              options={[
-                { label: "Upskill for Current Job", value: "Upskill for Current Job" },
-                { label: "Change Career Path", value: "Change Career Path" },
-                { label: "Start a Business", value: "Start a Business" },
-                { label: "Personal Interest", value: "Personal Interest" },
-              ]}
-              selected={formData.reasons}
-              onChange={(vals) => handleCheckboxChange("reasons", vals)}
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-slate-700 mb-3">
-              How did you hear about Sysfotech?
-            </label>
-            <CheckboxGroup
-              options={[
-                { label: "Google Search", value: "Google Search" },
-                { label: "Social Media", value: "Social Media" },
-                { label: "Friend Referral", value: "Friend Referral" },
-                { label: "Other", value: "Other" },
-              ]}
-              selected={formData.hearAboutUs}
-              onChange={(vals) => handleCheckboxChange("hearAboutUs", vals)}
-            />
-          </div>
-        </div>
-      </FormSection>
-
-      {/* Step 5: Demo Session */}
-      <FormSection
-        title="Free 1-Week Demo Registration"
-        step={5}
+        title="1-Day Free Demo Session"
+        step={3}
         icon={<Sparkles className="w-4 h-4 text-slate-500" />}
-        isOpen={openSection === 4}
-        onToggle={() => setOpenSection(openSection === 4 ? -1 : 4)}
+        isOpen={openSection === 2}
+        onToggle={() => setOpenSection(openSection === 2 ? -1 : 2)}
         isCompleted={!!formData.wantDemo}
       >
         <div className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-slate-700 mb-3">
-              Would you like to register for our free 1-week demo session?
+              Would you like to register for our free 1-day demo session?
             </label>
             <RadioGroup
               name="wantDemo"
@@ -666,49 +428,30 @@ export const CourseRegistrationForm = ({ preSelectedCourse, onSuccess }: CourseR
             <motion.div
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="grid sm:grid-cols-2 gap-4 border-t border-slate-100 pt-4"
+              className="pt-4 border-t border-slate-100"
             >
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1.5">
-                  Demo Class Option
-                </label>
-                <RadioGroup
-                  name="demoBatch"
-                  options={[
-                    { label: "Weekday Batch", value: "Weekday" },
-                    { label: "Weekend Batch", value: "Weekend" },
-                  ]}
-                  selected={formData.demoBatch}
-                  onChange={(val) => setFormData((prev) => ({ ...prev, demoBatch: val }))}
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1.5">
-                  Preferred Time
-                </label>
-                <RadioGroup
-                  name="demoTime"
-                  options={[
-                    { label: "Morning Session", value: "Morning" },
-                    { label: "Afternoon Session", value: "Afternoon" },
-                    { label: "Evening Session", value: "Evening" },
-                  ]}
-                  selected={formData.demoTime}
-                  onChange={(val) => setFormData((prev) => ({ ...prev, demoTime: val }))}
-                />
-              </div>
+              <label className="block text-sm font-medium text-slate-700 mb-1.5">
+                Select Demo Date
+              </label>
+              <Input
+                type="date"
+                name="demoDate"
+                value={formData.demoDate}
+                onChange={handleInputChange}
+                className="h-12 rounded-lg border-slate-200 focus:border-orange-primary focus:ring-orange-primary/20"
+              />
             </motion.div>
           )}
         </div>
       </FormSection>
 
-      {/* Step 6: Consent & Send */}
+      {/* Step 4: Consent & Send */}
       <FormSection
         title="Consent & Submit"
-        step={6}
+        step={4}
         icon={<Send className="w-4 h-4 text-slate-500" />}
-        isOpen={openSection === 5}
-        onToggle={() => setOpenSection(openSection === 5 ? -1 : 5)}
+        isOpen={openSection === 3}
+        onToggle={() => setOpenSection(openSection === 3 ? -1 : 3)}
         isCompleted={formData.consent}
       >
         <div className="space-y-6">

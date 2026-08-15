@@ -9,8 +9,13 @@ import { cn } from "@/lib/utils";
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const location = useLocation();
   const { navigateTo } = useNavigation();
+
+  useEffect(() => {
+    setIsLoggedIn(!!localStorage.getItem("magic_link_token"));
+  }, [location.pathname]); // re-check on route change
 
   // Handle scroll effect
   useEffect(() => {
@@ -118,19 +123,10 @@ const Header = () => {
               type="button"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              onClick={() => handleMenuClick('/login')}
-              className="ml-4 px-4 py-2 rounded-full text-sm font-medium text-foreground hover:bg-secondary transition-colors"
+              onClick={() => handleMenuClick(isLoggedIn ? '/dashboard' : '/login')}
+              className="ml-4 px-6 py-2 rounded-full bg-orange-primary text-white text-sm font-medium shadow-lg shadow-orange-primary/25 hover:bg-orange-600 transition-colors relative overflow-hidden group"
             >
-              Log in
-            </motion.button>
-            <motion.button
-              type="button"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => handleMenuClick('/signup')}
-              className="ml-2 px-6 py-2 rounded-full bg-orange-primary text-white text-sm font-medium shadow-lg shadow-orange-primary/25 hover:bg-orange-600 transition-colors relative overflow-hidden group"
-            >
-              <span className="relative z-10">Sign Up</span>
+              <span className="relative z-10">{isLoggedIn ? 'Dashboard' : 'Access Courses'}</span>
               <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
             </motion.button>
           </nav>
@@ -213,22 +209,14 @@ const Header = () => {
                   )}
                 </motion.button>
               ))}
-              <div className="flex gap-2 pt-4 mt-4 border-t">
+              <div className="flex pt-4 mt-4 border-t">
                 <motion.button
                   type="button"
                   whileTap={{ scale: 0.95 }}
-                  onClick={() => handleMenuClick('/login')}
-                  className="flex-1 py-3 text-center rounded-xl font-medium text-foreground bg-secondary hover:bg-secondary/80 transition-colors"
+                  onClick={() => handleMenuClick(isLoggedIn ? '/dashboard' : '/login')}
+                  className="w-full py-3 text-center rounded-xl font-medium text-white bg-orange-primary hover:bg-orange-600 transition-colors"
                 >
-                  Log In
-                </motion.button>
-                <motion.button
-                  type="button"
-                  whileTap={{ scale: 0.95 }}
-                  onClick={() => handleMenuClick('/signup')}
-                  className="flex-1 py-3 text-center rounded-xl font-medium text-white bg-orange-primary hover:bg-orange-600 transition-colors"
-                >
-                  Sign Up
+                  {isLoggedIn ? 'Dashboard' : 'Access Courses'}
                 </motion.button>
               </div>
             </motion.nav>
