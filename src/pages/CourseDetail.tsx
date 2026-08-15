@@ -237,18 +237,13 @@ const CourseDetail = () => {
                         </Link>
                       </Button>
                     ) : (
-                      <Button asChild className="w-full text-lg h-14 bg-green-600 hover:bg-green-700 text-white shadow-lg shadow-green-600/20 group rounded-xl">
-                        <Link to={`/checkout/${course.slug}`}>
-                          <Sparkles className="mr-2 h-5 w-5" />
-                          Buy Course Securely
-                          <span className="ml-2 bg-white/20 px-2 py-1 rounded text-sm group-hover:bg-white/30 transition-colors">
-                            £{course.price || '99.99'}
-                          </span>
-                        </Link>
+                      <Button disabled className="w-full text-lg h-14 bg-slate-400 text-white rounded-xl cursor-not-allowed">
+                        <Sparkles className="mr-2 h-5 w-5" />
+                        Enrollment Opening Soon
                       </Button>
                     )}
                     <p className="text-xs text-center text-slate-500 mt-2">
-                      Secured by Stripe & PayPal. Lifetime access included.
+                      Online enrollment will be available soon. Contact us for early registration.
                     </p>
                   </div>
 
