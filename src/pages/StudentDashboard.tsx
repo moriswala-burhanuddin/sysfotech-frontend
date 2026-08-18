@@ -1,4 +1,4 @@
-import { API_BASE } from '../../../../../config';
+import { API_BASE } from '../config';
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { BookOpen, CreditCard, PlayCircle, LogOut, CheckCircle2, FileText } from "lucide-react";

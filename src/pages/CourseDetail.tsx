@@ -1,4 +1,4 @@
-import { API_BASE } from '../../../../../config';
+import { API_BASE } from '../config';
 import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import {

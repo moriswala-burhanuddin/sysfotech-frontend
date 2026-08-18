@@ -1,4 +1,4 @@
-import { API_BASE } from '../../../../../config';
+import { API_BASE } from '../config';
 import { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { CheckCircle2, FileText, PlayCircle, Loader2 } from "lucide-react";
