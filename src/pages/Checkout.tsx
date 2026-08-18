@@ -10,6 +10,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useToast } from "@/components/ui/use-toast";
 import { Separator } from "@/components/ui/separator";
+import { Checkbox } from "@/components/ui/checkbox";
 
 // Stripe and PayPal
 import { loadStripe } from '@stripe/stripe-js';
@@ -42,7 +43,7 @@ const mockCourses = {
 const stripePublicKey = import.meta.env.VITE_STRIPE_PUBLIC_KEY || 'pk_test_TYooMQauvdEDq54NiTphI7jx';
 const stripePromise = loadStripe(stripePublicKey);
 
-const StripeCheckoutForm = ({ course, studentName, email, phone, onSuccess, isProcessing, setIsProcessing }: any) => {
+const StripeCheckoutForm = ({ course, studentName, email, phone, onSuccess, isProcessing, setIsProcessing, agreed }: any) => {
   const stripe = useStripe();
   const elements = useElements();
   const { toast } = useToast();
@@ -124,19 +125,20 @@ const StripeCheckoutForm = ({ course, studentName, email, phone, onSuccess, isPr
           },
         }} />
       </div>
-      <Button type="submit" className="w-full text-lg h-12" disabled={!stripe || isProcessing}>
+      <Button type="submit" className="w-full text-lg h-12" disabled={!stripe || isProcessing || !agreed}>
         {isProcessing ? <div className="h-5 w-5 animate-spin rounded-full border-b-2 border-white" /> : `Pay £${course.finalPrice || course.price}`}
       </Button>
     </form>
   );
 };
 
-const PayPalCheckout = ({ course, studentName, email, phone, onSuccess }: any) => {
+const PayPalCheckout = ({ course, studentName, email, phone, onSuccess, agreed }: any) => {
   const { toast } = useToast();
 
   return (
     <PayPalButtons 
       style={{ layout: "vertical" }}
+      disabled={!agreed}
       createOrder={async (data, actions) => {
          if (!studentName || !email) {
            toast({ title: "Missing Information", description: "Please provide your name and email.", variant: "destructive" });
@@ -190,6 +192,7 @@ const Checkout = () => {
   const [paymentPlan, setPaymentPlan] = useState("full");
   const [isProcessing, setIsProcessing] = useState(false);
   const [course, setCourse] = useState<any>(null);
+  const [agreed, setAgreed] = useState(false);
   
   const [studentName, setStudentName] = useState("");
   const [email, setEmail] = useState("");
@@ -484,6 +487,23 @@ const Checkout = () => {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
+                    <div className="flex items-start space-x-3 mb-6 bg-muted/50 p-4 rounded-lg border border-border">
+                      <Checkbox 
+                        id="terms" 
+                        checked={agreed} 
+                        onCheckedChange={(checked) => setAgreed(checked === true)} 
+                        className="mt-1"
+                      />
+                      <div className="grid gap-1.5 leading-none">
+                        <Label htmlFor="terms" className="text-sm font-medium leading-none cursor-pointer">
+                          I agree to the Terms and Conditions
+                        </Label>
+                        <p className="text-sm text-muted-foreground">
+                          By checking this box, you agree that all fees are non-refundable after checkout is completed.
+                        </p>
+                      </div>
+                    </div>
+
                     <RadioGroup
                       defaultValue="stripe"
                       value={paymentMethod}
@@ -514,6 +534,7 @@ const Checkout = () => {
                                     onSuccess={handlePaymentSuccess}
                                     isProcessing={isProcessing}
                                     setIsProcessing={setIsProcessing}
+                                    agreed={agreed}
                                  />
                               </Elements>
                             </motion.div>
