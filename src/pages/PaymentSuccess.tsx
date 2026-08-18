@@ -1,3 +1,4 @@
+import { API_BASE } from '../../../../../config';
 import { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { CheckCircle2, FileText, PlayCircle, Loader2 } from "lucide-react";
@@ -33,7 +34,7 @@ const PaymentSuccess = () => {
     
     const checkEnrollment = async () => {
       try {
-        const res = await fetch('http://127.0.0.1:8000/api/student/enrollments/', {
+        const res = await fetch(`${API_BASE}/student/enrollments/`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         
@@ -118,7 +119,7 @@ const PaymentSuccess = () => {
                   const token = localStorage.getItem("magic_link_token");
                   if (!token) return;
                   try {
-                    const res = await fetch(`http://127.0.0.1:8000/api/student/invoice/${latestEnrollmentId}/`, {
+                    const res = await fetch(`${API_BASE}/student/invoice/${latestEnrollmentId}/`, {
                       headers: { 'Authorization': `Bearer ${token}` }
                     });
                     if (!res.ok) throw new Error("Failed to download");

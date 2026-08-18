@@ -1,3 +1,4 @@
+import { API_BASE } from '../../../../../config';
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -62,7 +63,7 @@ const StripeCheckoutForm = ({ course, studentName, email, phone, onSuccess, isPr
       if (token) headers['Authorization'] = `Bearer ${token}`;
 
       // 1. Create PaymentIntent on the backend
-      const res = await fetch('http://127.0.0.1:8000/api/create-payment-intent/', {
+      const res = await fetch(`${API_BASE}/create-payment-intent/`, {
         method: 'POST',
         headers,
         body: JSON.stringify({ 
@@ -95,7 +96,7 @@ const StripeCheckoutForm = ({ course, studentName, email, phone, onSuccess, isPr
       }
 
       // Simulate webhook for local testing since we don't have Stripe CLI running
-      await fetch('http://127.0.0.1:8000/api/test/capture/', {
+      await fetch(`${API_BASE}/test/capture/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ payment_id: data.paymentIntentId })
@@ -146,7 +147,7 @@ const PayPalCheckout = ({ course, studentName, email, phone, onSuccess }: any) =
          const headers: HeadersInit = { 'Content-Type': 'application/json' };
          if (token) headers['Authorization'] = `Bearer ${token}`;
          
-         const res = await fetch('http://127.0.0.1:8000/api/create-paypal-order/', {
+         const res = await fetch(`${API_BASE}/create-paypal-order/`, {
            method: 'POST',
            headers,
            body: JSON.stringify({ 
@@ -210,7 +211,7 @@ const Checkout = () => {
       if (!token) return;
       setIsLoggedIn(true);
       try {
-        const res = await fetch('http://127.0.0.1:8000/api/student/enrollments/', {
+        const res = await fetch(`${API_BASE}/student/enrollments/`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         if (res.ok) {
@@ -231,7 +232,7 @@ const Checkout = () => {
     const fetchCourse = async () => {
       if (!slug) return;
       try {
-        const res = await fetch(`http://127.0.0.1:8000/api/courses/slug/${slug}/`);
+        const res = await fetch(`${API_BASE}/courses/slug/${slug}/`);
         if (res.ok) {
           const data = await res.json();
           setCourse({
@@ -295,7 +296,7 @@ const Checkout = () => {
     setIsApplyingCoupon(true);
     setCouponError("");
     try {
-      const res = await fetch('http://127.0.0.1:8000/api/coupons/validate/', {
+      const res = await fetch(`${API_BASE}/coupons/validate/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ code: couponCodeInput })

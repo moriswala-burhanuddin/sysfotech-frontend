@@ -1,3 +1,4 @@
+import { API_BASE } from '../../../../../config';
 import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import {
@@ -33,7 +34,7 @@ const CourseDetail = () => {
         return;
       }
       try {
-        const res = await fetch('http://127.0.0.1:8000/api/student/enrollments/', {
+        const res = await fetch(`${API_BASE}/student/enrollments/`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         if (res.ok) {

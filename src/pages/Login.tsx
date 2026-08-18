@@ -1,3 +1,4 @@
+import { API_BASE } from '../../../../../config';
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -29,7 +30,7 @@ const Login = () => {
     setIsLoading(true);
     
     try {
-      const res = await fetch('http://127.0.0.1:8000/api/login/', {
+      const res = await fetch(`${API_BASE}/login/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, redirect: redirectPath })

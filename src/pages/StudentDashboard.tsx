@@ -1,3 +1,4 @@
+import { API_BASE } from '../../../../../config';
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { BookOpen, CreditCard, PlayCircle, LogOut, CheckCircle2, FileText } from "lucide-react";
@@ -33,7 +34,7 @@ const StudentDashboard = () => {
       }
 
       try {
-        const res = await fetch('http://127.0.0.1:8000/api/student/enrollments/', {
+        const res = await fetch(`${API_BASE}/student/enrollments/`, {
           headers: { 'Authorization': `Bearer ${activeToken}` }
         });
         
@@ -203,7 +204,7 @@ const StudentDashboard = () => {
                                 const token = localStorage.getItem("magic_link_token");
                                 if (!token || !enrollment.id) return;
                                 try {
-                                  const res = await fetch(`http://127.0.0.1:8000/api/student/invoice/${enrollment.id}/`, {
+                                  const res = await fetch(`${API_BASE}/student/invoice/${enrollment.id}/`, {
                                     headers: { 'Authorization': `Bearer ${token}` }
                                   });
                                   if (!res.ok) throw new Error("Failed to download");
