@@ -14,13 +14,15 @@ const Login = () => {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
+  const searchParams = new URLSearchParams(window.location.search);
+  const redirectPath = searchParams.get('redirect');
 
   // Redirect to dashboard if already logged in
   useEffect(() => {
     if (localStorage.getItem("magic_link_token")) {
-      navigate("/dashboard");
+      navigate(redirectPath || "/dashboard");
     }
-  }, [navigate]);
+  }, [navigate, redirectPath]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -30,7 +32,7 @@ const Login = () => {
       const res = await fetch('http://127.0.0.1:8000/api/login/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email })
+        body: JSON.stringify({ email, redirect: redirectPath })
       });
       
       const data = await res.json();

@@ -71,7 +71,8 @@ const StripeCheckoutForm = ({ course, studentName, email, phone, onSuccess, isPr
           phone, 
           course_slug: course.slug, 
           course_title: course.title,
-          coupon_code: course.appliedCoupon?.code 
+          coupon_code: course.appliedCoupon?.code,
+          payment_plan: course.paymentPlan
         })
       });
       const data = await res.json();
@@ -154,7 +155,8 @@ const PayPalCheckout = ({ course, studentName, email, phone, onSuccess }: any) =
              phone, 
              course_slug: course.slug, 
              course_title: course.title,
-             coupon_code: course.appliedCoupon?.code
+             coupon_code: course.appliedCoupon?.code,
+             payment_plan: course.paymentPlan
            })
          });
          const result = await res.json();
@@ -184,6 +186,7 @@ const Checkout = () => {
   const { toast } = useToast();
   
   const [paymentMethod, setPaymentMethod] = useState("stripe");
+  const [paymentPlan, setPaymentPlan] = useState("full");
   const [isProcessing, setIsProcessing] = useState(false);
   const [course, setCourse] = useState<any>(null);
   
@@ -225,20 +228,45 @@ const Checkout = () => {
   }, []);
 
   useEffect(() => {
-    if (slug && mockCourses[slug as keyof typeof mockCourses]) {
-      setCourse(mockCourses[slug as keyof typeof mockCourses]);
-    } else {
-      const formatSlug = (str: string) => {
-          if (!str) return "Selected Course";
-          return str.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
-      };
-      setCourse({
-        title: formatSlug(slug || "selected-course"),
-        price: 99.99,
-        slug: slug || "selected-course",
-        image: "https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&q=80&w=600",
-      });
-    }
+    const fetchCourse = async () => {
+      if (!slug) return;
+      try {
+        const res = await fetch(`http://127.0.0.1:8000/api/courses/slug/${slug}/`);
+        if (res.ok) {
+          const data = await res.json();
+          setCourse({
+            ...data,
+            image: "https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&q=80&w=600",
+            price: parseFloat(data.price || 0),
+            one_time_price: parseFloat(data.one_time_price || data.price || 0),
+            installment_admission_fee: parseFloat(data.installment_admission_fee || data.price || 0),
+          });
+          return;
+        }
+      } catch (err) {
+        console.error("Failed to fetch course from API:", err);
+      }
+      
+      // Fallback
+      if (mockCourses[slug as keyof typeof mockCourses]) {
+        const c = mockCourses[slug as keyof typeof mockCourses];
+        setCourse({ ...c, one_time_price: c.price, installment_admission_fee: c.price });
+      } else {
+        const formatSlug = (str: string) => {
+            return str.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+        };
+        setCourse({
+          title: formatSlug(slug),
+          price: 429.00,
+          one_time_price: 351.00,
+          installment_admission_fee: 195.00,
+          slug: slug,
+          image: "https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&q=80&w=600",
+        });
+      }
+    };
+    
+    fetchCourse();
   }, [slug]);
 
   const handlePaymentSuccess = (magicLinkToken: string) => {
@@ -290,11 +318,20 @@ const Checkout = () => {
     setCouponError("");
   };
 
-  const discountAmount = appliedCoupon && course ? (course.price * (appliedCoupon.discount_percentage / 100)) : 0;
-  const finalPrice = course ? (course.price - discountAmount).toFixed(2) : "0.00";
+  // Calculate base price depending on the selected plan
+  const getBasePrice = () => {
+    if (!course) return 0;
+    if (paymentPlan === 'installment' && course.installment_admission_fee) return course.installment_admission_fee;
+    if (paymentPlan === 'full' && course.one_time_price) return course.one_time_price;
+    return course.price;
+  };
+  
+  const basePrice = getBasePrice();
+  const discountAmount = appliedCoupon ? (basePrice * (appliedCoupon.discount_percentage / 100)) : 0;
+  const finalPrice = (basePrice - discountAmount).toFixed(2);
 
   // Pass applied coupon to checkout components via course object
-  const courseWithCoupon = course ? { ...course, appliedCoupon, finalPrice } : null;
+  const courseWithCoupon = course ? { ...course, appliedCoupon, finalPrice, paymentPlan } : null;
 
   if (!course) return null;
 
@@ -387,6 +424,54 @@ const Checkout = () => {
                 </CardContent>
               </Card>
 
+              {/* Payment Plan Selection */}
+              <Card className="shadow-lg border-border/50 mb-8">
+                <CardHeader>
+                  <CardTitle className="text-xl flex items-center gap-2">
+                    <CheckCircle2 className="h-5 w-5 text-primary" />
+                    Select Payment Plan
+                  </CardTitle>
+                  <CardDescription>
+                    Choose how you would like to pay for {course.title}.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <RadioGroup
+                    defaultValue="full"
+                    value={paymentPlan}
+                    onValueChange={setPaymentPlan}
+                    className="gap-4"
+                  >
+                    <div className={`relative flex items-start space-x-3 border p-4 rounded-lg cursor-pointer transition-colors ${paymentPlan === 'full' ? 'border-primary bg-primary/5' : 'border-border hover:bg-muted/50'}`} onClick={() => setPaymentPlan('full')}>
+                      <RadioGroupItem value="full" id="plan-full" className="mt-1" />
+                      <div className="flex-1">
+                        <Label htmlFor="plan-full" className="font-semibold cursor-pointer text-base">
+                          Pay in Full
+                          <span className="ml-2 inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-semibold text-green-800">
+                            Save £{course.price - course.one_time_price}
+                          </span>
+                        </Label>
+                        <p className="text-sm text-muted-foreground mt-1">
+                          Make a one-time payment of <strong>£{course.one_time_price?.toFixed(2)}</strong> and save on the total course fee.
+                        </p>
+                      </div>
+                    </div>
+                    
+                    <div className={`relative flex items-start space-x-3 border p-4 rounded-lg cursor-pointer transition-colors ${paymentPlan === 'installment' ? 'border-primary bg-primary/5' : 'border-border hover:bg-muted/50'}`} onClick={() => setPaymentPlan('installment')}>
+                      <RadioGroupItem value="installment" id="plan-installment" className="mt-1" />
+                      <div className="flex-1">
+                        <Label htmlFor="plan-installment" className="font-semibold cursor-pointer text-base">
+                          Installment Plan
+                        </Label>
+                        <p className="text-sm text-muted-foreground mt-1">
+                          Pay an admission fee of <strong>£{course.installment_admission_fee?.toFixed(2)}</strong> today, followed by two monthly installments of £117. Total fee: £{course.price?.toFixed(2)}.
+                        </p>
+                      </div>
+                    </div>
+                  </RadioGroup>
+                </CardContent>
+              </Card>
+
               <Card className="shadow-lg border-border/50">
                 <CardHeader>
                   <CardTitle className="text-xl flex items-center gap-2">
@@ -435,34 +520,7 @@ const Checkout = () => {
                         </div>
                       </div>
 
-                      {/* PayPal Option - temporarily hidden
-                      <div className={`relative flex items-start space-x-3 border p-4 rounded-lg cursor-pointer transition-colors ${paymentMethod === 'paypal' ? 'border-primary bg-primary/5' : 'border-border hover:bg-muted/50'}`} onClick={() => setPaymentMethod('paypal')}>
-                        <RadioGroupItem value="paypal" id="paypal" className="mt-1" />
-                        <div className="flex-1">
-                          <Label htmlFor="paypal" className="font-semibold cursor-pointer">PayPal</Label>
-                          <p className="text-sm text-muted-foreground mt-1">You will be redirected to PayPal to complete your purchase securely.</p>
-                          
-                          {paymentMethod === 'paypal' && (
-                            <motion.div
-                              initial={{ opacity: 0 }}
-                              animate={{ opacity: 1 }}
-                              transition={{ duration: 0.3 }}
-                              className="mt-4"
-                            >
-                              <PayPalScriptProvider options={{ clientId: import.meta.env.VITE_PAYPAL_CLIENT_ID || "test" }}>
-                                <PayPalCheckout 
-                                   course={courseWithCoupon} 
-                                   studentName={studentName} 
-                                   email={email} 
-                                   phone={phone} 
-                                   onSuccess={handlePaymentSuccess}
-                                />
-                              </PayPalScriptProvider>
-                            </motion.div>
-                          )}
-                        </div>
-                      </div>
-                      */}
+
                     </RadioGroup>
                 </CardContent>
                 <CardFooter className="bg-muted/30 border-t p-6 flex-col items-start gap-4">

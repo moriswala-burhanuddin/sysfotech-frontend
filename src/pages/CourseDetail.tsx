@@ -237,13 +237,15 @@ const CourseDetail = () => {
                         </Link>
                       </Button>
                     ) : (
-                      <Button disabled className="w-full text-lg h-14 bg-slate-400 text-white rounded-xl cursor-not-allowed">
-                        <Sparkles className="mr-2 h-5 w-5" />
-                        Enrollment Opening Soon
+                      <Button asChild className="w-full text-lg h-14 bg-green-600 hover:bg-green-700 text-white shadow-lg shadow-green-600/20 group rounded-xl">
+                        <Link to={`/checkout/${course.slug}`}>
+                          <Sparkles className="mr-2 h-5 w-5" />
+                          Buy Course Securely
+                        </Link>
                       </Button>
                     )}
                     <p className="text-xs text-center text-slate-500 mt-2">
-                      Online enrollment will be available soon. Contact us for early registration.
+                      Secured by Stripe & PayPal. Lifetime access included.
                     </p>
                   </div>
 

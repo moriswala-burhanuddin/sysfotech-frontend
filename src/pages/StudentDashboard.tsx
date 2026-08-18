@@ -127,9 +127,6 @@ const StudentDashboard = () => {
                           <div className="flex items-center text-sm text-green-600 font-medium">
                             <CheckCircle2 className="mr-1 h-4 w-4" /> Enrolled
                           </div>
-                          <Button className="bg-slate-900 hover:bg-slate-800 text-white">
-                            Start Learning <PlayCircle className="ml-2 h-4 w-4" />
-                          </Button>
                         </div>
                       </div>
                     </div>
@@ -161,39 +158,73 @@ const StudentDashboard = () => {
                           <p className="text-xs text-muted-foreground">{enrollment.date}</p>
                           <p className="font-bold text-sm">£{enrollment.amount}</p>
                         </div>
-                        <div className="flex justify-between items-center mt-3">
-                          <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">
-                            Paid ✓
-                          </span>
-                          <Button 
-                            variant="link" 
-                            size="sm" 
-                            className="h-auto p-0 text-orange-primary"
-                            onClick={async () => {
-                              const token = localStorage.getItem("magic_link_token");
-                              if (!token || !enrollment.id) return;
-                              try {
-                                const res = await fetch(`http://127.0.0.1:8000/api/student/invoice/${enrollment.id}/`, {
-                                  headers: { 'Authorization': `Bearer ${token}` }
-                                });
-                                if (!res.ok) throw new Error("Failed to download");
-                                const blob = await res.blob();
-                                const url = window.URL.createObjectURL(blob);
-                                const a = document.createElement('a');
-                                a.href = url;
-                                a.download = `INV-${String(enrollment.id).padStart(5, '0')}.pdf`;
-                                document.body.appendChild(a);
-                                a.click();
-                                a.remove();
-                                window.URL.revokeObjectURL(url);
-                              } catch {
-                                console.error("Invoice download failed");
-                              }
-                            }}
-                          >
-                            <FileText className="mr-1 h-3 w-3" /> Download receipt
-                          </Button>
-                        </div>
+
+                        {/* If Installments */}
+                        {enrollment.payment_plan === 'installment' ? (
+                          <div className="mt-3 space-y-2">
+                            <div className="flex justify-between text-xs text-slate-500 mb-2">
+                              <span>Total: £{enrollment.amount}</span>
+                              <span>Paid: £{enrollment.amount_paid}</span>
+                              <span>Remaining: £{enrollment.amount_remaining}</span>
+                            </div>
+                            <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Installments</p>
+                            {enrollment.installments?.map((inst: any) => {
+                              const dueDateStr = new Date(inst.due_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+                              return (
+                                <div key={inst.id} className="flex justify-between items-center text-sm p-2 rounded-md bg-slate-50 border border-slate-100">
+                                  <div>
+                                    <span className="font-medium block">{inst.name}</span>
+                                    <span className="text-xs text-slate-500">£{inst.amount} • Due: {dueDateStr}</span>
+                                  </div>
+                                  {inst.status === 'paid' ? (
+                                    <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-green-100 text-green-800">
+                                      Paid
+                                    </span>
+                                  ) : (
+                                    <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-blue-50 text-blue-700 border border-blue-200">
+                                      Auto-pay Scheduled
+                                    </span>
+                                  )}
+                                </div>
+                              );
+                            })}
+                          </div>
+                        ) : (
+                          /* Full Payment */
+                          <div className="flex justify-between items-center mt-3">
+                            <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">
+                              Paid ✓
+                            </span>
+                            <Button 
+                              variant="link" 
+                              size="sm" 
+                              className="h-auto p-0 text-orange-primary"
+                              onClick={async () => {
+                                const token = localStorage.getItem("magic_link_token");
+                                if (!token || !enrollment.id) return;
+                                try {
+                                  const res = await fetch(`http://127.0.0.1:8000/api/student/invoice/${enrollment.id}/`, {
+                                    headers: { 'Authorization': `Bearer ${token}` }
+                                  });
+                                  if (!res.ok) throw new Error("Failed to download");
+                                  const blob = await res.blob();
+                                  const url = window.URL.createObjectURL(blob);
+                                  const a = document.createElement('a');
+                                  a.href = url;
+                                  a.download = `INV-${String(enrollment.id).padStart(5, '0')}.pdf`;
+                                  document.body.appendChild(a);
+                                  a.click();
+                                  a.remove();
+                                  window.URL.revokeObjectURL(url);
+                                } catch {
+                                  console.error("Invoice download failed");
+                                }
+                              }}
+                            >
+                              <FileText className="mr-1 h-3 w-3" /> Download receipt
+                            </Button>
+                          </div>
+                        )}
                       </div>
                     </div>
                   ))

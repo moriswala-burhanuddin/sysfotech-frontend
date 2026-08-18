@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/components/ui/use-toast';
-import { 
-  Users, BookOpen, CreditCard, Tag, GraduationCap, 
-  Receipt, LogOut, Trash2, Search, Plus, X, Menu, Edit, Save, Eye, ChevronRight
+import {
+  Users, BookOpen, CreditCard, Tag, GraduationCap,
+  Receipt, LogOut, Trash2, Search, Plus, X, Menu, Edit, Save, Eye, ChevronRight, Mail
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -13,6 +13,7 @@ const TABS = [
   { id: 'students', label: 'Students', icon: Users, endpoint: 'students', desc: 'Manage your registered students' },
   { id: 'courses', label: 'Courses', icon: BookOpen, endpoint: 'courses', desc: 'Add or update course offerings' },
   { id: 'enrollments', label: 'Enrollments', icon: GraduationCap, endpoint: 'enrollments', desc: 'View student course enrollments' },
+  { id: 'installments', label: 'Installments', icon: Receipt, endpoint: 'installments', desc: 'Manage upcoming and pending installments' },
   { id: 'transactions', label: 'Transactions', icon: Receipt, endpoint: 'transactions', desc: 'Monitor successful payments' },
   { id: 'checkout-sessions', label: 'Checkouts', icon: CreditCard, endpoint: 'checkout-sessions', desc: 'Track pending and completed checkouts' },
   { id: 'coupons', label: 'Coupons', icon: Tag, endpoint: 'coupons', desc: 'Manage discount codes' },
@@ -24,6 +25,7 @@ const SCHEMAS: Record<string, any> = {
   'checkout-sessions': { name: '', email: '', course: '', amount: 0, payment_provider: 'stripe', status: 'pending' },
   coupons: { code: '', discount_percentage: 0, max_uses: 100, is_active: true },
   enrollments: { student: '', course: '', amount: 0, status: 'paid', payment_provider: 'stripe' },
+  installments: { student_name: '', student_email: '', course_title: '', name: '', amount: 0, due_date: '', status: 'pending' },
   transactions: { student: '', course: '', amount: 0, status: 'succeeded', payment_method: 'card' }
 };
 
@@ -37,7 +39,11 @@ const AdminDashboard = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [modalMode, setModalMode] = useState<'create' | 'edit' | 'view' | null>(null);
   const [currentRecord, setCurrentRecord] = useState<any>({});
-  
+
+  const [filterPlan, setFilterPlan] = useState('all');
+  const [filterStatus, setFilterStatus] = useState('all');
+  const [filterDueStatus, setFilterDueStatus] = useState('all');
+
   const navigate = useNavigate();
   const { toast } = useToast();
   const token = localStorage.getItem('adminToken');
@@ -47,6 +53,9 @@ const AdminDashboard = () => {
     if (!token) { navigate('/admin-portal/login'); return; }
     fetchData();
     setSearchTerm('');
+    setFilterPlan('all');
+    setFilterStatus('all');
+    setFilterDueStatus('all');
     setModalMode(null);
     setSidebarOpen(false);
   }, [activeTab]);
@@ -67,7 +76,7 @@ const AdminDashboard = () => {
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     const isCreate = modalMode === 'create';
-    const url = isCreate 
+    const url = isCreate
       ? `${API_BASE}/${activeTab.endpoint}/`
       : `${API_BASE}/${activeTab.endpoint}/${currentRecord.id}/`;
     const payload = { ...currentRecord };
@@ -90,6 +99,8 @@ const AdminDashboard = () => {
       }
     } catch { toast({ title: 'Error saving', variant: 'destructive' }); }
   };
+
+
 
   const handleDelete = async (id: number | string, e?: React.MouseEvent) => {
     e?.stopPropagation();
@@ -121,30 +132,46 @@ const AdminDashboard = () => {
 
   const statusBadge = (val: any) => {
     const s = String(val).toLowerCase();
-    const cls = ['paid','completed','active','success','true','succeeded'].includes(s)
+    const cls = ['paid', 'completed', 'active', 'success', 'true', 'succeeded'].includes(s)
       ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
-      : ['pending','processing'].includes(s)
-      ? 'bg-amber-50 text-amber-700 border-amber-200'
-      : ['failed','cancelled','inactive','false'].includes(s)
-      ? 'bg-red-50 text-red-700 border-red-200'
-      : 'bg-slate-50 text-slate-600 border-slate-200';
+      : ['pending', 'processing'].includes(s)
+        ? 'bg-amber-50 text-amber-700 border-amber-200'
+        : ['failed', 'cancelled', 'inactive', 'false'].includes(s)
+          ? 'bg-red-50 text-red-700 border-red-200'
+          : 'bg-slate-50 text-slate-600 border-slate-200';
     const label = typeof val === 'boolean' ? (val ? 'Active' : 'Inactive') : val;
     return <span className={`inline-flex px-2.5 py-0.5 rounded-md text-xs font-semibold border ${cls}`}>{label}</span>;
   };
 
   const filtered = data.filter(item => {
-    if (!searchTerm) return true;
-    return Object.values(item).some(v => String(v).toLowerCase().includes(searchTerm.toLowerCase()));
+    if (searchTerm && !Object.values(item).some(v => String(v).toLowerCase().includes(searchTerm.toLowerCase()))) return false;
+
+    // Enrollments specific filters
+    if (activeTab.id === 'enrollments') {
+      if (filterPlan !== 'all' && item.payment_plan !== filterPlan) return false;
+      if (filterStatus !== 'all' && item.status !== filterStatus) return false;
+      if (filterDueStatus !== 'all' && item.installments) {
+        if (filterDueStatus === 'has_overdue') {
+          if (!item.installments.some((inst: any) => inst.status === 'overdue')) return false;
+        } else if (filterDueStatus === 'has_pending') {
+          if (!item.installments.some((inst: any) => inst.status === 'pending')) return false;
+        } else if (filterDueStatus === 'fully_paid') {
+          if (item.installments.some((inst: any) => inst.status !== 'paid')) return false;
+        }
+      }
+    }
+    return true;
   });
 
   const getHeaders = () => {
     if (data.length === 0) return [];
-    const exclude = ['id', 'magic_link_token', 'password'];
+    const exclude = ['id', 'magic_link_token', 'password', 'stripe_customer_id', 'stripe_subscription_id', 'student_stripe_customer_id'];
     const keys = Object.keys(data[0]);
     // If readable name fields exist, hide the raw FK ID columns
     if (keys.includes('student_name')) exclude.push('student');
     if (keys.includes('course_title')) exclude.push('course');
     if (keys.includes('enrolled_courses')) exclude.push('enrolled_courses'); // show in detail modal only
+    if (keys.includes('installments')) exclude.push('installments'); // show in detail modal only
 
     let h = keys.filter(k => !exclude.includes(k));
     const pri = ['name', 'student_name', 'title', 'code', 'email', 'student_email', 'course_title', 'amount', 'status', 'created_at'];
@@ -158,11 +185,20 @@ const AdminDashboard = () => {
     return h;
   };
 
+  const paymentPlanBadge = (val: string) => {
+    if (!val) return '-';
+    if (val === 'full') {
+      return <span className="inline-flex px-2.5 py-0.5 rounded-md text-xs font-semibold border bg-emerald-50 text-emerald-700 border-emerald-200">Full Payment</span>;
+    }
+    return <span className="inline-flex px-2.5 py-0.5 rounded-md text-xs font-semibold border bg-amber-50 text-amber-700 border-amber-200">Installments</span>;
+  };
+
   const formatCell = (header: string, value: any) => {
     if (header === 'status' || header === 'is_active') return statusBadge(value);
+    if (header === 'payment_plan') return paymentPlanBadge(value);
     if (header.includes('at') || header.includes('date')) return formatDate(value);
     if (typeof value === 'boolean') return value ? 'Yes' : 'No';
-    if (header === 'amount' || header === 'price') return typeof value === 'number' ? `₹${value.toFixed(2)}` : value;
+    if (header === 'amount' || header === 'price' || header.includes('fee')) return typeof value === 'number' || !isNaN(parseFloat(value)) ? `£${parseFloat(value).toFixed(2)}` : value;
     if (value === null || value === undefined) return '-';
     if (Array.isArray(value)) {
       if (value.length === 0) return 'None';
@@ -184,10 +220,33 @@ const AdminDashboard = () => {
           <div key={i} style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: 10, padding: '12px 16px' }}>
             <div style={{ fontWeight: 600, color: '#0f172a', marginBottom: 4 }}>{c.course_title || '-'}</div>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, fontSize: 13, color: '#64748b' }}>
-              <span>Amount: <strong style={{ color: '#334155' }}>₹{c.amount}</strong></span>
+              <span>Amount: <strong style={{ color: '#334155' }}>£{c.amount}</strong></span>
               <span>Provider: <strong style={{ color: '#334155' }}>{c.payment_provider}</strong></span>
+              <span>Plan: {paymentPlanBadge(c.payment_plan)}</span>
               <span>Status: {statusBadge(c.status)}</span>
               <span>Date: <strong style={{ color: '#334155' }}>{formatDate(c.enrolled_at)}</strong></span>
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  };
+
+  const renderInstallments = (installments: any[]) => {
+    if (!installments || installments.length === 0) {
+      return <span style={{ color: '#94a3b8' }}>No installments found</span>;
+    }
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+        {installments.map((inst: any, i: number) => (
+          <div key={i} style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: 10, padding: '12px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div>
+              <div style={{ fontWeight: 600, color: '#0f172a', marginBottom: 4 }}>Payment #{inst.installment_number} ({inst.name})</div>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, fontSize: 13, color: '#64748b' }}>
+                <span>Amount: <strong style={{ color: '#334155' }}>£{inst.amount}</strong></span>
+                <span>Due Date: <strong style={{ color: '#334155' }}>{formatDate(inst.due_date).split(',')[0]}</strong></span>
+                <span>Status: {statusBadge(inst.status)}</span>
+              </div>
             </div>
           </div>
         ))}
@@ -261,7 +320,7 @@ const AdminDashboard = () => {
               <p style={{ fontSize: 11, color: '#64748b', marginBottom: 2 }}>Logged in as</p>
               <p style={{ fontSize: 14, fontWeight: 600, color: 'white' }}>{adminUsername}</p>
             </div>
-            <button 
+            <button
               onClick={handleLogout}
               style={{
                 width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
@@ -291,11 +350,11 @@ const AdminDashboard = () => {
                 <p style={{ fontSize: 13, color: '#64748b', margin: 0 }} className="hidden md:block">{activeTab.desc}</p>
               </div>
             </div>
-            
+
             <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
               <div style={{ position: 'relative' }} className="hidden md:block">
                 <Search size={16} style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
-                <input 
+                <input
                   type="text" placeholder="Search..." value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   style={{
@@ -307,7 +366,7 @@ const AdminDashboard = () => {
                   onBlur={(e) => { e.target.style.border = '1px solid transparent'; e.target.style.background = '#f1f5f9'; }}
                 />
               </div>
-              <button 
+              <button
                 onClick={() => { setCurrentRecord(SCHEMAS[activeTab.endpoint] || {}); setModalMode('create'); }}
                 style={{
                   display: 'flex', alignItems: 'center', gap: 8, padding: '10px 18px',
@@ -327,7 +386,7 @@ const AdminDashboard = () => {
           <div className="md:hidden" style={{ padding: '12px 16px 0', background: '#f8fafc' }}>
             <div style={{ position: 'relative' }}>
               <Search size={16} style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
-              <input 
+              <input
                 type="text" placeholder={`Search ${activeTab.label}...`} value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 style={{ width: '100%', paddingLeft: 38, paddingRight: 14, paddingTop: 10, paddingBottom: 10, background: 'white', border: '1px solid #e2e8f0', borderRadius: 12, fontSize: 14, outline: 'none' }}
@@ -337,6 +396,38 @@ const AdminDashboard = () => {
 
           {/* Scrollable Content */}
           <div style={{ flex: 1, overflowY: 'auto', padding: '24px' }}>
+
+            {/* Enrollment Filters */}
+            {activeTab.id === 'enrollments' && (
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, marginBottom: 20, background: 'white', padding: '16px 20px', borderRadius: 16, border: '1px solid #e2e8f0' }}>
+                <div style={{ flex: '1 1 200px' }}>
+                  <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: '#64748b', marginBottom: 6 }}>Payment Plan</label>
+                  <select value={filterPlan} onChange={e => setFilterPlan(e.target.value)} style={{ width: '100%', padding: '8px 12px', borderRadius: 8, border: '1px solid #d1d5db', outline: 'none', fontSize: 14 }}>
+                    <option value="all">All Plans</option>
+                    <option value="full">Full Payment</option>
+                    <option value="installment">Installments</option>
+                  </select>
+                </div>
+                <div style={{ flex: '1 1 200px' }}>
+                  <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: '#64748b', marginBottom: 6 }}>Enrollment Status</label>
+                  <select value={filterStatus} onChange={e => setFilterStatus(e.target.value)} style={{ width: '100%', padding: '8px 12px', borderRadius: 8, border: '1px solid #d1d5db', outline: 'none', fontSize: 14 }}>
+                    <option value="all">All Statuses</option>
+                    <option value="paid">Paid</option>
+                    <option value="pending">Pending</option>
+                  </select>
+                </div>
+                <div style={{ flex: '1 1 200px' }}>
+                  <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: '#64748b', marginBottom: 6 }}>Installment Due Status</label>
+                  <select value={filterDueStatus} onChange={e => setFilterDueStatus(e.target.value)} style={{ width: '100%', padding: '8px 12px', borderRadius: 8, border: '1px solid #d1d5db', outline: 'none', fontSize: 14 }}>
+                    <option value="all">All</option>
+                    <option value="fully_paid">Fully Paid</option>
+                    <option value="has_pending">Has Pending Installment</option>
+                    <option value="has_overdue">Has Overdue Installment</option>
+                  </select>
+                </div>
+              </div>
+            )}
+
             {/* Stats */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 16, marginBottom: 24 }}>
               <div style={{ background: 'white', padding: '20px 24px', borderRadius: 16, border: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -364,7 +455,7 @@ const AdminDashboard = () => {
                 </div>
                 <h3 style={{ fontSize: 18, fontWeight: 700, color: '#0f172a', margin: '0 0 8px' }}>No records yet</h3>
                 <p style={{ color: '#64748b', maxWidth: 320, margin: '0 auto 20px' }}>Create a new record to start managing your data.</p>
-                <button 
+                <button
                   onClick={() => { setCurrentRecord(SCHEMAS[activeTab.endpoint] || {}); setModalMode('create'); }}
                   style={{ background: '#6366f1', color: 'white', border: 'none', borderRadius: 12, padding: '10px 24px', fontWeight: 600, cursor: 'pointer' }}
                 >
@@ -387,7 +478,7 @@ const AdminDashboard = () => {
                     </thead>
                     <tbody>
                       {filtered.map((row, idx) => (
-                        <tr 
+                        <tr
                           key={row.id || idx}
                           onClick={() => { setCurrentRecord({ ...row }); setModalMode('view'); }}
                           style={{ borderBottom: '1px solid #f1f5f9', cursor: 'pointer', transition: 'background 0.15s' }}
@@ -419,6 +510,7 @@ const AdminDashboard = () => {
                               >
                                 <Trash2 size={16} />
                               </button>
+
                             </div>
                           </td>
                         </tr>
@@ -457,7 +549,7 @@ const AdminDashboard = () => {
                 <div style={{ padding: '20px 24px', borderBottom: '1px solid #f1f5f9', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#f8fafc' }}>
                   <h3 style={{ fontSize: 18, fontWeight: 700, color: '#0f172a', margin: 0, display: 'flex', alignItems: 'center', gap: 10 }}>
                     {modalMode === 'view' ? <Eye size={20} color="#6366f1" /> : modalMode === 'create' ? <Plus size={20} color="#6366f1" /> : <Edit size={20} color="#6366f1" />}
-                    {modalMode === 'create' ? `New ${activeTab.label.slice(0,-1)}` : modalMode === 'view' ? 'Record Details' : 'Edit Record'}
+                    {modalMode === 'create' ? `New ${activeTab.label.slice(0, -1)}` : modalMode === 'view' ? 'Record Details' : 'Edit Record'}
                   </h3>
                   <button onClick={() => setModalMode(null)} style={{ background: 'white', border: '1px solid #e2e8f0', borderRadius: '50%', width: 36, height: 36, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#64748b' }}>
                     <X size={18} />
@@ -470,14 +562,14 @@ const AdminDashboard = () => {
                     {Object.keys(currentRecord).map(key => {
                       const isRO = READ_ONLY_FIELDS.includes(key);
                       if (modalMode === 'create' && isRO) return null;
-                      
+
                       // Hide raw FK ID fields when readable versions exist
                       const recordKeys = Object.keys(currentRecord);
                       if (key === 'student' && recordKeys.includes('student_name')) return null;
                       if (key === 'course' && recordKeys.includes('course_title')) return null;
                       // Hide read-only derived fields in edit mode
-                      if (modalMode === 'edit' && ['student_name', 'student_email', 'student_phone', 'course_title', 'enrolled_courses'].includes(key)) return null;
-                      if (modalMode === 'create' && ['student_name', 'student_email', 'student_phone', 'course_title', 'enrolled_courses'].includes(key)) return null;
+                      if (modalMode === 'edit' && ['student_name', 'student_email', 'student_phone', 'course_title', 'enrolled_courses', 'installments'].includes(key)) return null;
+                      if (modalMode === 'create' && ['student_name', 'student_email', 'student_phone', 'course_title', 'enrolled_courses', 'installments'].includes(key)) return null;
 
                       const value = currentRecord[key];
                       const isView = modalMode === 'view';
@@ -494,33 +586,53 @@ const AdminDashboard = () => {
                         );
                       }
 
+                      // Special render for installments array
+                      if (key === 'installments' && isView) {
+                        return (
+                          <div key={key} style={{ borderBottom: '1px solid #f1f5f9', paddingBottom: 16 }}>
+                            <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 10 }}>
+                              Payment Installments
+                            </label>
+                            {renderInstallments(value)}
+                          </div>
+                        );
+                      }
+
                       return (
                         <div key={key} style={{ borderBottom: isView ? '1px solid #f1f5f9' : 'none', paddingBottom: isView ? 16 : 0 }}>
                           <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 6 }}>
                             {key.replace(/_/g, ' ')}
                           </label>
-                          
-                          {isView || isRO || ['student_name', 'student_email', 'student_phone', 'course_title'].includes(key) ? (
+
+                          {isView && key.includes('stripe') ? (
+                            <div 
+                              onClick={() => navigator.clipboard.writeText(value)}
+                              style={{ fontSize: 14, fontFamily: 'monospace', color: '#6366f1', background: '#eef2ff', padding: '6px 10px', borderRadius: 6, display: 'inline-block', fontWeight: 600, cursor: 'pointer' }}
+                              title="Click to copy"
+                            >
+                              {value?.toString() || '-'}
+                            </div>
+                          ) : isView || isRO || ['student_name', 'student_email', 'student_phone', 'course_title'].includes(key) ? (
                             <div style={{ fontSize: 15, color: '#0f172a', fontWeight: 500 }}>
                               {typeof value === 'boolean' ? statusBadge(value) :
-                               (key.includes('at') || key.includes('date')) ? formatDate(value) :
-                               (key === 'status' || key === 'is_active') ? statusBadge(value) :
-                               Array.isArray(value) ? (value.length === 0 ? 'None' : value.map((v: any) => typeof v === 'object' ? (v.course_title || JSON.stringify(v)) : v).join(', ')) :
-                               value?.toString() || '-'}
+                                (key.includes('at') || key.includes('date')) ? formatDate(value) :
+                                  (key === 'status' || key === 'is_active') ? statusBadge(value) :
+                                    Array.isArray(value) ? (value.length === 0 ? 'None' : value.map((v: any) => typeof v === 'object' ? (v.course_title || JSON.stringify(v)) : v).join(', ')) :
+                                      value?.toString() || '-'}
                             </div>
                           ) : typeof value === 'boolean' ? (
                             <label style={{ display: 'inline-flex', alignItems: 'center', gap: 10, cursor: 'pointer' }}>
-                              <input 
+                              <input
                                 type="checkbox" checked={value}
-                                onChange={(e) => setCurrentRecord({...currentRecord, [key]: e.target.checked})}
+                                onChange={(e) => setCurrentRecord({ ...currentRecord, [key]: e.target.checked })}
                                 style={{ width: 20, height: 20, accentColor: '#6366f1', cursor: 'pointer' }}
                               />
                               <span style={{ fontSize: 14, color: '#334155' }}>{value ? 'Active' : 'Inactive'}</span>
                             </label>
                           ) : typeof value === 'number' ? (
-                            <input 
+                            <input
                               type="number" value={value || ''}
-                              onChange={(e) => setCurrentRecord({...currentRecord, [key]: Number(e.target.value)})}
+                              onChange={(e) => setCurrentRecord({ ...currentRecord, [key]: Number(e.target.value) })}
                               style={{ width: '100%', padding: '10px 14px', border: '1px solid #d1d5db', borderRadius: 10, fontSize: 14, outline: 'none', transition: 'border 0.2s' }}
                               onFocus={(e) => e.target.style.borderColor = '#6366f1'}
                               onBlur={(e) => e.target.style.borderColor = '#d1d5db'}
@@ -528,15 +640,15 @@ const AdminDashboard = () => {
                           ) : (key === 'description') ? (
                             <textarea
                               value={value || ''} rows={3}
-                              onChange={(e) => setCurrentRecord({...currentRecord, [key]: e.target.value})}
+                              onChange={(e) => setCurrentRecord({ ...currentRecord, [key]: e.target.value })}
                               style={{ width: '100%', padding: '10px 14px', border: '1px solid #d1d5db', borderRadius: 10, fontSize: 14, outline: 'none', resize: 'vertical', fontFamily: 'inherit', transition: 'border 0.2s' }}
                               onFocus={(e) => e.target.style.borderColor = '#6366f1'}
                               onBlur={(e) => e.target.style.borderColor = '#d1d5db'}
                             />
                           ) : (
-                            <input 
+                            <input
                               type="text" value={value || ''}
-                              onChange={(e) => setCurrentRecord({...currentRecord, [key]: e.target.value})}
+                              onChange={(e) => setCurrentRecord({ ...currentRecord, [key]: e.target.value })}
                               style={{ width: '100%', padding: '10px 14px', border: '1px solid #d1d5db', borderRadius: 10, fontSize: 14, outline: 'none', transition: 'border 0.2s' }}
                               onFocus={(e) => e.target.style.borderColor = '#6366f1'}
                               onBlur={(e) => e.target.style.borderColor = '#d1d5db'}

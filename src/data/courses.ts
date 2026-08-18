@@ -661,19 +661,7 @@ export const courses: Course[] = [
   },
 ];
 
-export const allCourseOptions = [
-  "Artificial Intelligence (AI)",
-  "Data Science",
-  "Machine Learning",
-  "Cyber Security",
-  "Microsoft Power BI",
-  "AI for Business Professionals",
-  "AI for Marketing & Content Creation",
-  "AI Productivity (ChatGPT, Microsoft Copilot, Notion AI)",
-  "AI-Powered Business Automation (Google Workspace, AppSheet, Apps Script)",
-  "Next-Gen Data Analytics (Power BI & AI)",
-  "AI for Office Productivity",
-];
+export const allCourseOptions = courses.map(c => c.title);
 
 export const whyChooseUs = [
   {

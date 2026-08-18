@@ -11,6 +11,7 @@ const MagicLinkVerify = () => {
 
   useEffect(() => {
     const token = searchParams.get("token");
+    const redirectPath = searchParams.get("redirect") || "/dashboard";
 
     if (!token) {
       setError("Invalid or missing verification link. Please request a new access link.");
@@ -22,7 +23,7 @@ const MagicLinkVerify = () => {
     
     // Slight delay to show loading state before redirect
     setTimeout(() => {
-      navigate("/dashboard");
+      navigate(redirectPath);
     }, 1000);
   }, [searchParams, navigate]);
 

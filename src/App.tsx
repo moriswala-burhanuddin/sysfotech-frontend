@@ -21,6 +21,7 @@ import Terms from "./pages/Terms";
 import Login from "./pages/Login";
 import MagicLinkVerify from "./pages/MagicLinkVerify";
 import Checkout from "./pages/Checkout";
+
 import PaymentSuccess from "./pages/PaymentSuccess";
 import StudentDashboard from "./pages/StudentDashboard";
 import AdminLogin from "./pages/admin/AdminLogin";
@@ -46,13 +47,14 @@ const AppRoutes = () => {
       <Route path="/courses" element={<Courses />} />
       <Route path="/courses/:slug" element={<CourseDetail />} />
       <Route path="/checkout/:slug" element={<Checkout />} />
+
       <Route path="/payment-success" element={<PaymentSuccess />} />
       <Route path="/dashboard" element={<StudentDashboard />} />
       <Route path="/login" element={<Login />} />
       <Route path="/verify" element={<MagicLinkVerify />} />
 
       <Route path="/projects/:slug" element={<ProjectDetail />} />
-      
+
       <Route path="/privacy-policy" element={<PrivacyPolicy />} />
       <Route path="/terms" element={<Terms />} />
 
