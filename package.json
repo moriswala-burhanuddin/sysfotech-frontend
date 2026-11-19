@@ -104,6 +104,7 @@
       "/privacy-policy",
       "/terms"
     ],
+    "crawl": false,
     "inlineCss": false,
     "skipThirdPartyRequests": true
   }

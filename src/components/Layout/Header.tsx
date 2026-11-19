@@ -26,13 +26,14 @@ const Header = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const isActive = (path: string) => location.pathname === path;
+  const isActive = (path: string) =>
+    location.pathname === path || (path !== "/" && location.pathname.startsWith(path));
 
   const navItems = [
     { name: "Home", path: "/" },
     { name: "About Us", path: "/about" },
     { name: "Services", path: "/services" },
-    { name: "Courses", path: "/courses" },
+    { name: "6-Month Programme", path: "/courses" },
     { name: "Blog", path: "/blog" },
     { name: "Testimonials", path: "/testimonials" },
     { name: "Contact Us", path: "/contact" },

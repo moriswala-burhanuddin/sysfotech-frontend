@@ -461,6 +461,75 @@ export const courses: Course[] = [
       "power bi course uk, power bi certification london, learn power bi, microsoft power bi training, sysfotech power bi",
   }, */
   {
+    slug: "sysfotech-6-month-ai-program",
+    title: "Sysfotech UK 6-Month AI & Automation Program",
+    shortTitle: "6-Month AI & Automation Program",
+    shortDescription:
+      "Complete 6-Month Intensive Curriculum Roadmap covering AI-Powered Business Automation, n8n, RPA, Power BI Data Analytics, and a 3-Month Live UK Internship.",
+    fullDescription:
+      "The flagship Sysfotech UK 6-Month Intensive Curriculum Roadmap transforms learners into industry-ready AI, Automation, and Data Analytics professionals. Across 5 comprehensive phases, you will master Google Workspace, AppSheet, Google Apps Script, n8n Workflow Automation, Microsoft Power Automate Desktop (RPA), and Next-Gen Data Analytics with Power BI & DAX, followed by a 3-Month Live UK Internship with 1-on-1 mentorship and dual certification.",
+    icon: Brain,
+    color: "#F26522",
+    highlights: [
+      "Phase 1: AI-Powered Business Automation (Google Workspace, AppSheet & Apps Script)",
+      "Phase 2: n8n Visual Workflow Automation & OpenAI Agents",
+      "Phase 3: Robotic Process Automation (Power Automate Desktop)",
+      "Phase 4: Next-Gen Data Analytics (Power Query, Star Schema, DAX & Power BI)",
+      "Phase 5: 3-Month Live UK Internship, 1-on-1 Mentorship & Career Acceleration",
+      "Dual Certification: Course Completion + UK Internship Certificate",
+    ],
+    curriculum: [
+      {
+        title: "Phase 1: AI-Powered Business Automation (Weeks 1-4)",
+        topics: [
+          "Week 1: Google Workspace & Sheets Foundation (VLOOKUP, XLOOKUP, INDEX/MATCH, Pre-Defined Master Sheet)",
+          "Week 2: AppSheet & Low-Code Architecture (Inventory Master App & HR Leave-Approval Portal with RLS)",
+          "Week 3: Google Apps Script & Autonomous Agents (Event-Driven & Scheduled Triggers, GmailApp vs MailApp)",
+          "Week 4: Integration & Phase Conclusion (AppSheet Bots, Platform Merging & Security Deployment)",
+        ],
+      },
+      {
+        title: "Phase 2: n8n Workflow Automation (Weeks 5-6)",
+        topics: [
+          "Week 5: n8n Zero to One (Node-based visual workflow engines, Triggers, JSON data flow, Slack/Discord automation)",
+          "Week 6: Advanced Logic & APIs (Webhooks, HTTP Request Node & OpenAI Agent integrations)",
+        ],
+      },
+      {
+        title: "Phase 3: Robotic Process Automation (Weeks 7-8)",
+        topics: [
+          "Week 7: Power Automate Desktop Basics (UI navigation, desktop flows, recorder & variable management)",
+          "Week 8: Advanced RPA Workflows (Live Web & Excel scraping, error handling & resilient UI flows)",
+        ],
+      },
+      {
+        title: "Phase 4: Next-Gen Data Analytics (Weeks 9-12)",
+        topics: [
+          "Week 9: Data Ingestion & Power Query (ETL Fundamentals & Data Cleaning)",
+          "Week 10: Data Modeling & DAX (Star Schema, Fact vs Dimension tables, CALCULATE & Time Intelligence)",
+          "Week 11: Visualizations & UX (Matrix, Scatter, Line charts, Slicers, drill-downs & custom tooltips)",
+          "Week 12: Publishing & Administration (Power BI Service, scheduled refreshes & Executive Dashboard)",
+        ],
+      },
+      {
+        title: "Phase 5: Live Internship & Career Acceleration (Months 4-6)",
+        topics: [
+          "Months 4-5: Live Project Building & Mentorship (Integrated corporate projects, weekly UK business assignments & 1-on-1 code reviews)",
+          "Month 6: Professional Branding & Placement Prep (ATS Resume building, LinkedIn/Naukri optimization, Mock Interviews & Dual Certification)",
+        ],
+      },
+    ],
+    duration: ["6-Month Intensive Program (3 Months Training + 3 Months UK Internship)"],
+    schedule: "Mon, Tue, Thu, Fri — 1 Hour Per Session",
+    level: "Beginner to Advanced",
+    metaTitle: "Sysfotech UK 6-Month AI & Automation Program | Course & UK Internship",
+    metaDescription:
+      "Enrol in the Sysfotech UK 6-Month Intensive AI, Workflow Automation, RPA & Data Analytics Program with a 3-Month Live UK Internship and Dual Certification.",
+    metaKeywords:
+      "sysfotech uk program, 6 month ai course uk, ai business automation, n8n course, power automate rpa, power bi course london, uk internship certificate",
+    price: 429,
+  },
+  {
     slug: "ai-powered-business-automation",
     title: "AI-Powered Business Automation (Google Workspace, AppSheet, Apps Script)",
     shortTitle: "AI Business Automation",
@@ -661,7 +730,12 @@ export const courses: Course[] = [
   },
 ];
 
-export const allCourseOptions = courses.map(c => c.title);
+export const flagshipCourseSlug = "sysfotech-6-month-ai-program";
+export const flagshipCourseTitle = "Sysfotech UK 6-Month AI & Automation Programme";
+
+// Active registration options for the new 6-Month AI Programme (previous multi-course list preserved below)
+export const allCourseOptions = [flagshipCourseTitle];
+// export const legacyAllCourseOptions = courses.map(c => c.title);
 
 export const whyChooseUs = [
   {

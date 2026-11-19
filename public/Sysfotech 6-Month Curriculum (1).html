@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sysfotech 6-Month Curriculum</title>
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+
+    body {
+        font-family: 'Poppins', sans-serif;
+        background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+        color: #333;
+        margin: 0;
+        padding: 40px 20px;
+    }
+
+    .container {
+        max-width: 900px;
+        margin: 0 auto;
+    }
+
+    .header-banner {
+        background: linear-gradient(135deg, #0A192F 0%, #1A365D 100%);
+        color: white;
+        padding: 40px;
+        border-radius: 16px;
+        text-align: center;
+        margin-bottom: 40px;
+        box-shadow: 0 10px 30px rgba(10, 25, 47, 0.2);
+    }
+
+    .header-banner h1 {
+        margin: 0;
+        font-size: 2.5rem;
+        color: #F26522;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+    }
+
+    .header-banner p {
+        font-size: 1.2rem;
+        margin-top: 10px;
+        color: #A0AEC0;
+    }
+
+    .cert-badges {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        margin-top: 20px;
+    }
+
+    .cert-badge {
+        background: rgba(242, 101, 34, 0.2);
+        color: #F26522;
+        border: 1px solid #F26522;
+        padding: 8px 16px;
+        border-radius: 50px;
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+
+    details {
+        background: white;
+        border-radius: 12px;
+        margin-bottom: 20px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+
+    details[open] {
+        box-shadow: 0 10px 25px rgba(242, 101, 34, 0.15);
+        border: 1px solid #F26522;
+    }
+
+    summary {
+        background: linear-gradient(90deg, #ffffff 0%, #f8f9fa 100%);
+        padding: 20px 25px;
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: #0A192F;
+        cursor: pointer;
+        list-style: none;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    summary::-webkit-details-marker {
+        display: none;
+    }
+
+    summary::after {
+        content: '+';
+        font-size: 1.8rem;
+        color: #F26522;
+        transition: transform 0.3s ease;
+    }
+
+    details[open] summary::after {
+        content: '-';
+        transform: rotate(180deg);
+    }
+
+    .phase-content {
+        padding: 25px;
+        border-top: 1px solid #edf2f7;
+        background: #fafbfc;
+    }
+
+    .week-block {
+        margin-bottom: 25px;
+    }
+
+    .week-block:last-child {
+        margin-bottom: 0;
+    }
+
+    .week-title {
+        font-size: 1.1rem;
+        color: #F26522;
+        font-weight: 700;
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .week-title span {
+        background: #0A192F;
+        color: white;
+        padding: 4px 10px;
+        border-radius: 4px;
+        font-size: 0.85rem;
+    }
+
+    .week-desc {
+        background: white;
+        border-left: 4px solid #F26522;
+        padding: 15px 20px;
+        border-radius: 0 8px 8px 0;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+    }
+
+    ul.custom-list {
+        margin: 0;
+        padding-left: 20px;
+    }
+
+    ul.custom-list li {
+        margin-bottom: 8px;
+        color: #4a5568;
+    }
+
+    ul.custom-list li strong {
+        color: #2d3748;
+    }
+
+    /* Phase-specific colors */
+    .phase-1 summary { border-left: 6px solid #3182CE; }
+    .phase-2 summary { border-left: 6px solid #D69E2E; }
+    .phase-3 summary { border-left: 6px solid #38A169; }
+    .phase-4 summary { border-left: 6px solid #805AD5; }
+    .phase-5 summary { border-left: 6px solid #E53E3E; background: #fff5f5; }
+
+</style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header-banner">
+        <h1>Sysfotech UK Program</h1>
+        <p>Complete 6-Month Intensive Curriculum Roadmap</p>
+        <div class="cert-badges">
+            <div class="cert-badge">🏆 Course Completion Certificate</div>
+            <div class="cert-badge">💼 UK Internship Certificate</div>
+        </div>
+    </div>
+
+    <!-- PHASE 1 -->
+    <details class="phase-1" open>
+        <summary>Phase 1: AI-Powered Business Automation (Weeks 1-4)</summary>
+        <div class="phase-content">
+            <div class="week-block">
+                <div class="week-title"><span>Week 1</span> Google Workspace & Sheets Foundation</div>
+                <div class="week-desc">
+                    <ul class="custom-list">
+                        <li><strong>Workspace Intro:</strong> Navigating Google Workspace and setting up cloud databases.</li>
+                        <li><strong>Mathematical Operations:</strong> Core syntax for addition, subtraction, multiplication, and division.</li>
+                        <li><strong>Data Lookups:</strong> Deep dive into VLOOKUP, modern XLOOKUP, and INDEX/MATCH combinations.</li>
+                        <li><strong>Pre-Defined Master Sheet:</strong> Students receive a fully pre-configured Google Sheet containing all formulas, formatted tables, and sample data to use as a live reference tool.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="week-block">
+                <div class="week-title"><span>Week 2</span> AppSheet & Low-Code Architecture</div>
+                <div class="week-desc">
+                    <ul class="custom-list">
+                        <li><strong>Interface Configuration:</strong> Connecting the Google Sheet backend, creating Views, and assigning User Roles.</li>
+                        <li><strong>Master App 1 (Inventory):</strong> Building an end-to-end stock control application with barcode scanning and automated deductions.</li>
+                        <li><strong>Master App 2 (HR App):</strong> Developing a leave-approval portal emphasizing Row-Level Security (RLS) to ensure employees only see their own data, plus dynamic supervisor views.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="week-block">
+                <div class="week-title"><span>Week 3</span> Google Apps Script & Autonomous Agents</div>
+                <div class="week-desc">
+                    <ul class="custom-list">
+                        <li><strong>Scripting Fundamentals:</strong> Editor navigation, JavaScript syntax basics, and writing custom functions.</li>
+                        <li><strong>Event-Driven Triggers:</strong> Configuring <code>onEdit</code>, <code>onChange</code>, and <code>onOpen</code> triggers to execute code dynamically on sheet interactions.</li>
+                        <li><strong>Scheduled Automations:</strong> Setting up time-driven triggers to run scripts at specific intervals.</li>
+                        <li><strong>Email Agent Architecture:</strong> Understanding the distinct limits and use-cases of <code>GmailApp</code> vs. <code>MailApp</code>. Building autonomous background agents that execute jobs based on set conditions.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="week-block">
+                <div class="week-title"><span>Week 4</span> Integration & Phase Conclusion</div>
+                <div class="week-desc">
+                    <ul class="custom-list">
+                        <li><strong>AppSheet Automations:</strong> Building bots and event actions directly within the AppSheet interface.</li>
+                        <li><strong>Platform Merging:</strong> Connecting Apps Script agents to AppSheet workflows.</li>
+                        <li><strong>Deployment:</strong> Finalizing the HR and Inventory apps and applying security protocols.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </details>
+
+    <!-- PHASE 2 -->
+    <details class="phase-2">
+        <summary>Phase 2: n8n Workflow Automation (Weeks 5-6)</summary>
+        <div class="phase-content">
+            <div class="week-block">
+                <div class="week-title"><span>Week 5</span> n8n Zero to One</div>
+                <div class="week-desc">
+                    <ul class="custom-list">
+                        <li><strong>Core Concepts:</strong> Understanding node-based visual workflow engines, Triggers, and JSON data flow.</li>
+                        <li><strong>First Workflows:</strong> Connecting Google Sheets triggers to automated Slack/Discord messaging.</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="week-block">
+                <div class="week-title"><span>Week 6</span> Advanced Logic & APIs</div>
+                <div class="week-desc">
+                    <ul class="custom-list">
+                        <li><strong>Webhooks & APIs:</strong> Mastering the HTTP Request Node to connect n8n to custom web tools.</li>
+                        <li><strong>AI Agents:</strong> Integrating OpenAI nodes to intelligently route, analyze, and process incoming business data.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </details>
+
+    <!-- PHASE 3 -->
+    <details class="phase-3">
+        <summary>Phase 3: Robotic Process Automation (Weeks 7-8)</summary>
+        <div class="phase-content">
+            <div class="week-block">
+                <div class="week-title"><span>Week 7</span> Power Automate Desktop Basics</div>
+                <div class="week-desc">
+                    <ul class="custom-list">
+                        <li><strong>Desktop Automation Intro:</strong> Navigating the UI, creating desktop flows, and utilizing the desktop recorder.</li>
+                        <li><strong>Variable Management:</strong> Setting inputs, outputs, and manipulating variables for repetitive tasks.</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="week-block">
+                <div class="week-title"><span>Week 8</span> Advanced RPA Workflows</div>
+                <div class="week-desc">
+                    <ul class="custom-list">
+                        <li><strong>Web & Excel Scraping:</strong> Automating data extraction from live websites and manipulating local Excel files without human input.</li>
+                        <li><strong>Error Handling:</strong> Building resilient UI flows with block errors and sub-flows.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </details>
+
+    <!-- PHASE 4 -->
+    <details class="phase-4">
+        <summary>Phase 4: Next-Gen Data Analytics (Weeks 9-12)</summary>
+        <div class="phase-content">
+            <div class="week-block">
+                <div class="week-title"><span>Week 9</span> Data Ingestion & Power Query</div>
+                <div class="week-desc">
+                    <ul class="custom-list">
+                        <li><strong>ETL Fundamentals:</strong> Extract, Transform, Load processes using Power Query Editor.</li>
+                        <li><strong>Data Cleaning:</strong> Profiling, shaping, unpivoting columns, and merging dirty datasets into usable formats.</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="week-block">
+                <div class="week-title"><span>Week 10</span> Data Modeling & DAX</div>
+                <div class="week-desc">
+                    <ul class="custom-list">
+                        <li><strong>Star Schema:</strong> Establishing active/inactive relationships and building Fact vs. Dimension tables.</li>
+                        <li><strong>Mastering DAX:</strong> Execution contexts, CALCULATE, time intelligence (YTD, MTD), and iterative functions.</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="week-block">
+                <div class="week-title"><span>Week 11</span> Visualizations & UX</div>
+                <div class="week-desc">
+                    <ul class="custom-list">
+                        <li><strong>Visual Selection:</strong> Choosing the right charts (Matrix, Scatter, Line) for the data story.</li>
+                        <li><strong>Interactivity:</strong> Configuring Slicers, drill-downs, cross-filtering, and custom tooltips.</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="week-block">
+                <div class="week-title"><span>Week 12</span> Publishing & Administration</div>
+                <div class="week-desc">
+                    <ul class="custom-list">
+                        <li><strong>Power BI Service:</strong> Uploading reports, managing workspaces, and configuring scheduled dataset refreshes.</li>
+                        <li><strong>Phase 4 Wrap-Up:</strong> Building a complete executive dashboard from scratch.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </details>
+
+    <!-- PHASE 5 -->
+    <details class="phase-5">
+        <summary>Phase 5: Live Internship & Career Acceleration (Months 4-6)</summary>
+        <div class="phase-content">
+            <div class="week-block">
+                <div class="week-title"><span>Months 4-5</span> Live Project Building & Mentorship</div>
+                <div class="week-desc">
+                    <ul class="custom-list">
+                        <li><strong>Integrated Corporate Projects:</strong> Building comprehensive solutions using AppSheet, Apps Script, n8n, Power Automate, and Power BI simultaneously.</li>
+                        <li><strong>Live Assignments:</strong> Weekly tasks mimicking real-world UK business requirements.</li>
+                        <li><strong>1-on-1 Mentorship:</strong> Dedicated doubt-solving sessions, live code reviews, and architecture feedback.</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="week-block">
+                <div class="week-title"><span>Month 6</span> Professional Branding & Placement Prep</div>
+                <div class="week-desc">
+                    <ul class="custom-list">
+                        <li><strong>Resume Building:</strong> Crafting ATS-friendly resumes highlighting automation and analytics portfolios.</li>
+                        <li><strong>Profile Configuration:</strong> Optimizing LinkedIn and Naukri profiles for maximum recruiter visibility.</li>
+                        <li><strong>Mock Interviews:</strong> Technical and HR interview simulations with industry experts.</li>
+                        <li><strong>Graduation:</strong> Final evaluation and issuance of the <strong>Course Completion</strong> and <strong>Internship Completion</strong> certificates.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </details>
+
+</div>
+
+</body>
+</html>

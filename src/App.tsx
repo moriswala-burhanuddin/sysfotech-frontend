@@ -16,6 +16,7 @@ import BlogPost from "./pages/BlogPost";
 import ProjectDetail from "./pages/ProjectDetail";
 import Courses from "./pages/Courses";
 import CourseDetail from "./pages/CourseDetail";
+import SixMonthProgram from "./pages/SixMonthProgram";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import Terms from "./pages/Terms";
 import Login from "./pages/Login";
@@ -44,8 +45,11 @@ const AppRoutes = () => {
       <Route path="/blog" element={<Blog />} />
       <Route path="/blog/:id" element={<BlogPost />} />
 
-      <Route path="/courses" element={<Courses />} />
-      <Route path="/courses/:slug" element={<CourseDetail />} />
+      {/* New 6-Month AI Program Page (current multi-course pages kept hidden on /legacy-courses) */}
+      <Route path="/courses" element={<SixMonthProgram />} />
+      <Route path="/courses/:slug" element={<SixMonthProgram />} />
+      <Route path="/legacy-courses" element={<Courses />} />
+      <Route path="/legacy-courses/:slug" element={<CourseDetail />} />
       <Route path="/checkout/:slug" element={<Checkout />} />
 
       <Route path="/payment-success" element={<PaymentSuccess />} />
@@ -69,7 +73,7 @@ import Lenis from "lenis";
 const App = () => {
   useEffect(() => {
     // Don't use Lenis smooth scroll on admin pages — it breaks native overflow scrolling
-    if (window.location.pathname.startsWith('/admin-portal')) return;
+    if (window.location.pathname.startsWith('/')) return;
 
     const lenis = new Lenis({
       duration: 1.2,

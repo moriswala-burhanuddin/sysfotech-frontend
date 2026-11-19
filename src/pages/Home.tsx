@@ -11,6 +11,7 @@ import { motion, useMotionValue, useTransform, useSpring, useScroll } from "fram
 import { useRef } from "react";
 import heroBg from "@/assets/hero-image.jpg";
 import CapsuleCTA from "@/components/CTA/CapsuleCTA";
+import InvenzaBento from "@/components/Invenza/InvenzaBento";
 
 
 
@@ -94,8 +95,8 @@ const HeroSection = () => {
               <Button asChild className="h-14 px-8 text-lg rounded-full bg-white text-black hover:bg-gray-200 hover:scale-105 transition-all font-bold tracking-tight">
                 <Link to="/contact">Initialize Project</Link>
               </Button>
-              <Button asChild variant="outline" className="h-14 px-8 text-lg rounded-full border-orange-500 text-orange-400 hover:bg-orange-500 hover:text-white hover:scale-105 transition-all font-bold tracking-tight">
-                <Link to="/courses">1-Day FREE Demo</Link>
+              <Button asChild variant="outline" className="h-14 px-8 text-lg rounded-full border-white/25 text-white hover:bg-white/10 hover:text-white hover:scale-105 transition-all font-bold tracking-tight">
+                <Link to="/services">Explore IT Services</Link>
               </Button>
             </div>
           </motion.div>
@@ -353,29 +354,92 @@ const Home = () => {
         {/* Hero Section (ADVANCED INTERACTIVE 3D) */}
         <HeroSection />
 
-        {/* Dedicated Courses CTA Banner */}
-        <section className="py-12 bg-orange-600 relative overflow-hidden">
-          <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
-          <div className="container relative z-10 flex flex-col md:flex-row items-center justify-between gap-8">
-            <div className="text-center md:text-left">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-500/30 text-white text-xs font-bold tracking-wider uppercase mb-3 border border-orange-400/50">
-                <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-                Live Training Available
+        {/* Two Clear Areas: Business IT Services & 6-Month Training Programme */}
+        <section className="py-14 bg-[#f8f9fa] border-b border-slate-200">
+          <div className="container max-w-6xl mx-auto px-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* For Businesses */}
+              <div className="bg-white border border-slate-200 rounded-lg p-7 flex flex-col justify-between">
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-wider text-orange-primary mb-2">
+                    For Businesses
+                  </p>
+                  <h2 className="text-2xl font-bold text-slate-900 mb-2.5">
+                    IT Services &amp; Software Development
+                  </h2>
+                  <p className="text-slate-600 text-sm leading-relaxed mb-6">
+                    Need a website, mobile app, or custom software for your company? Our London team builds reliable websites, ERP systems, and internal business tools.
+                  </p>
+                  <div className="grid sm:grid-cols-2 gap-2.5 mb-6">
+                    {[
+                      "Websites & Web Apps",
+                      "iOS & Android Mobile Apps",
+                      "Custom ERP & Staff Portals",
+                      "Office & Workflow Automation",
+                    ].map((item, idx) => (
+                      <div key={idx} className="flex items-center gap-2 text-sm text-slate-700">
+                        <CheckCircle className="w-4 h-4 text-orange-primary shrink-0" />
+                        <span>{item}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="flex flex-wrap gap-3 pt-5 border-t border-slate-200">
+                  <Button asChild className="bg-slate-900 hover:bg-slate-800 text-white font-semibold rounded-lg px-5 h-10 text-sm">
+                    <Link to="/services">
+                      View Our Services <ArrowRight className="ml-1.5 w-4 h-4" />
+                    </Link>
+                  </Button>
+                  <Button asChild variant="outline" className="border-slate-300 text-slate-700 hover:bg-slate-100 font-semibold rounded-lg px-5 h-10 text-sm">
+                    <Link to="/contact">Get in Touch</Link>
+                  </Button>
+                </div>
               </div>
-              <h2 className="text-3xl md:text-4xl font-extrabold text-white mb-2 tracking-tight">
-                Master IT & Accelerate Your Career
-              </h2>
-              <p className="text-orange-100 text-lg">
-                Join our professional certification courses in London. 
-              </p>
-            </div>
-            <div className="flex-shrink-0 flex flex-col sm:flex-row gap-4 w-full md:w-auto">
-              <Button asChild size="lg" className="bg-white text-orange-600 hover:bg-gray-100 font-bold text-lg h-14 px-8 rounded-full shadow-xl w-full sm:w-auto hover:scale-105 transition-transform">
-                <Link to="/courses">1-Day FREE Demo</Link>
-              </Button>
+
+              {/* For Students & Professionals */}
+              <div className="bg-[#0f172a] text-white border border-slate-800 rounded-lg p-7 flex flex-col justify-between">
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-wider text-orange-primary mb-2">
+                    For Learners &amp; Professionals
+                  </p>
+                  <h2 className="text-2xl font-bold text-white mb-2.5">
+                    6-Month AI, Automation &amp; UK Internship Programme
+                  </h2>
+                  <p className="text-slate-300 text-sm leading-relaxed mb-6">
+                    Want to learn practical business automation and data analysis? Study for 3 months in live classes (Google Workspace, AppSheet, n8n, Power Automate, and Power BI), followed by a 3-month UK project internship.
+                  </p>
+                  <div className="grid sm:grid-cols-2 gap-2.5 mb-6">
+                    {[
+                      "Course Completion Certificate",
+                      "UK Internship Certificate",
+                      "3 Months Live Practical Classes",
+                      "3 Months UK Project Placement",
+                    ].map((item, idx) => (
+                      <div key={idx} className="flex items-center gap-2 text-sm text-slate-200">
+                        <CheckCircle className="w-4 h-4 text-orange-primary shrink-0" />
+                        <span>{item}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="flex flex-wrap gap-3 pt-5 border-t border-slate-800">
+                  <Button asChild className="bg-orange-primary hover:bg-orange-dark text-white font-semibold rounded-lg px-5 h-10 text-sm">
+                    <Link to="/courses">
+                      View Course Syllabus <ArrowRight className="ml-1.5 w-4 h-4" />
+                    </Link>
+                  </Button>
+                  <Button asChild variant="outline" className="border-slate-700 text-white hover:bg-slate-800 hover:text-white bg-transparent font-semibold rounded-lg px-5 h-10 text-sm">
+                    <Link to="/courses#enrolment-form">Book a Free Trial Class</Link>
+                  </Button>
+                </div>
+              </div>
             </div>
           </div>
-        </section>        {/* About Preview Section (ENHANCED) */}
+        </section>
+
+        {/* About Preview Section (ENHANCED) */}
         <section className="py-24 bg-background overflow-hidden relative">
           <div className="absolute top-0 right-0 w-1/2 h-full bg-orange-primary/5 -skew-x-12 translate-x-1/4"></div>
           <div className="container grid lg:grid-cols-2 gap-16 items-center relative z-10">
@@ -474,6 +538,9 @@ const Home = () => {
             </div>
           </div>
         </section>
+
+        {/* Invenza Premium Section */}
+        <InvenzaBento />
 
         {/* Bento Grid Projects Section */}
         <BentoProjects />

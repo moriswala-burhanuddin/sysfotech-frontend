@@ -21,7 +21,16 @@ const TABS = [
 
 const SCHEMAS: Record<string, any> = {
   students: { name: '', email: '', phone_number: '' },
-  courses: { title: '', slug: '', description: '', price: 0, is_active: true },
+  courses: {
+    title: '',
+    slug: '',
+    description: '',
+    price: 429,
+    one_time_price: 351,
+    installment_admission_fee: 195,
+    stripe_installment_price_id: '',
+    is_active: true,
+  },
   'checkout-sessions': { name: '', email: '', course: '', amount: 0, payment_provider: 'stripe', status: 'pending' },
   coupons: { code: '', discount_percentage: 0, max_uses: 100, is_active: true },
   enrollments: { student: '', course: '', amount: 0, status: 'paid', payment_provider: 'stripe' },

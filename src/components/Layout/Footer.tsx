@@ -120,7 +120,15 @@ const Footer = () => {
                   onClick={() => handleMenuClick('/services')}
                   className="text-gray-300 hover:text-orange-primary transition-all duration-200 hover:translate-x-1"
                 >
-                  Services
+                  IT Services
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => handleMenuClick('/courses')}
+                  className="text-gray-300 hover:text-orange-primary transition-all duration-200 hover:translate-x-1"
+                >
+                  6-Month Programme
                 </button>
               </li>
               <li>

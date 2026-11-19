@@ -18,7 +18,15 @@ import { Elements, CardElement, useStripe, useElements } from '@stripe/react-str
 import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 
 // Mock courses to fetch details (similar to CourseDetail)
-const mockCourses = {
+const mockCourses: Record<string, { title: string; price: number; one_time_price?: number; installment_admission_fee?: number; slug: string; image: string }> = {
+  "sysfotech-6-month-ai-program": {
+    title: "Sysfotech UK 6-Month AI & Automation Program",
+    price: 429.00,
+    one_time_price: 351.00,
+    installment_admission_fee: 195.00,
+    slug: "sysfotech-6-month-ai-program",
+    image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=600",
+  },
   "web-development-bootcamp": {
     title: "Complete Web Development Bootcamp",
     price: 99.99,
@@ -39,9 +47,18 @@ const mockCourses = {
   }
 };
 
-// Initialize Stripe (will use env variable if provided, else fallback to mock)
+// Initialize Stripe lazily when Checkout page is visited
 const stripePublicKey = import.meta.env.VITE_STRIPE_PUBLIC_KEY || 'pk_test_TYooMQauvdEDq54NiTphI7jx';
-const stripePromise = loadStripe(stripePublicKey);
+let stripePromise: ReturnType<typeof loadStripe> | null = null;
+const getStripePromise = () => {
+  if (!stripePromise) {
+    stripePromise = loadStripe(stripePublicKey).catch((err) => {
+      console.warn('Stripe.js load failed:', err);
+      return null;
+    });
+  }
+  return stripePromise;
+};
 
 const StripeCheckoutForm = ({ course, studentName, email, phone, onSuccess, isProcessing, setIsProcessing, agreed }: any) => {
   const stripe = useStripe();
@@ -252,9 +269,13 @@ const Checkout = () => {
       }
       
       // Fallback
-      if (mockCourses[slug as keyof typeof mockCourses]) {
-        const c = mockCourses[slug as keyof typeof mockCourses];
-        setCourse({ ...c, one_time_price: c.price, installment_admission_fee: c.price });
+      if (mockCourses[slug]) {
+        const c = mockCourses[slug];
+        setCourse({
+          ...c,
+          one_time_price: c.one_time_price ?? c.price,
+          installment_admission_fee: c.installment_admission_fee ?? c.price,
+        });
       } else {
         const formatSlug = (str: string) => {
             return str.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
@@ -468,7 +489,7 @@ const Checkout = () => {
                           Installment Plan
                         </Label>
                         <p className="text-sm text-muted-foreground mt-1">
-                          Pay an admission fee of <strong>£{course.installment_admission_fee?.toFixed(2)}</strong> today, followed by two monthly installments of £117. Total fee: £{course.price?.toFixed(2)}.
+                          Pay an admission fee of <strong>£{course.installment_admission_fee?.toFixed(2)}</strong> today, followed by two monthly installments of £{(((course.price || 429) - (course.installment_admission_fee || 195)) / 2).toFixed(2).replace(/\.00$/, '')}. Total fee: £{course.price?.toFixed(2)}.
                         </p>
                       </div>
                     </div>
@@ -525,7 +546,7 @@ const Checkout = () => {
                               className="mt-4"
                               onClick={(e) => e.stopPropagation()}
                             >
-                              <Elements stripe={stripePromise}>
+                              <Elements stripe={getStripePromise()}>
                                  <StripeCheckoutForm 
                                     course={courseWithCoupon} 
                                     studentName={studentName} 

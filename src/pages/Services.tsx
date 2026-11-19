@@ -18,9 +18,8 @@ const Services = () => {
     'mobile': 'mobile-app-development-uk',
     'design': 'ui-ux-design-company-uk',
     'marketing': 'digital-marketing-agency-uk',
-    'server': 'it-service-and-support',
+    'server': 'erp-and-crm-development',
     'seo': 'seo-services-uk',
-    'testing': 'software-testing-services',
     'support': 'it-support-maintenance'
   };
 
@@ -90,34 +89,19 @@ const Services = () => {
       ]
     },
     {
-      id: "testing",
-      icon: CheckCircle,
-      title: "Testing & QA",
-      description: "Comprehensive quality assurance to ensure flawless software delivery.",
-      details: [
-        "Manual Testing",
-        "Automated Testing",
-        "Performance Testing",
-        "Security Testing",
-        "User Acceptance Testing",
-        "Test Case Development"
-      ]
-    },
-    {
       id: "server",
       icon: Cpu,
-      title: "IT Service and Support",
-      description: "Complete ERP software development, business automation solutions, and IT infrastructure services for SMEs.",
+      title: "ERP & CRM Development",
+      description: "Custom ERP and CRM software built for UK businesses to manage operations, stock, invoicing, and customer relationships in one place.",
       details: [
-        "Firewall setup and management for secure operations",
-        "WiFi configuration and optimization for performance and reliability",
-        "Network troubleshooting and connectivity issue resolution",
-        "VoIP system setup and troubleshooting for seamless communication",
-        "Security implementation: endpoint protection, data backup, and disaster recovery",
-        "Network Setup",
-        "Hardware Installation",
-        "System Configuration",
-        "Infrastructure Planning"
+        "Custom ERP System Development",
+        "Bespoke CRM & Sales Pipeline Platforms",
+        "Inventory, Stock & Warehouse Management",
+        "Automated Invoicing & Billing Systems",
+        "Staff Portals & Role-Based Access Control",
+        "Customer Lead Tracking & Follow-up Automation",
+        "Real-Time Business Reporting & Dashboards",
+        "Third-Party API & Accounting Integrations"
       ]
     },
     {
@@ -169,25 +153,6 @@ const Services = () => {
 
   const additionalServices = [
     {
-      icon: Database,
-      title: "Server Administration",
-      description: "Professional server management and infrastructure solutions.",
-      features: [
-        "Cloud Server Setup",
-        "Database Management",
-        "System Monitoring",
-        "Backup Solutions",
-        "Performance Optimization",
-        "24/7 Server Support"
-      ]
-    },
-    {
-      icon: Shield,
-      title: "Cyber Security",
-      description: "Protect your business from digital threats with our comprehensive security solutions.",
-      features: ["Vulnerability Assessment", "Security Audits", "Firewall Configuration", "Data Protection"]
-    },
-    {
       icon: Users,
       title: "Social Media Management",
       description: "Build and maintain your brand presence across all social media platforms.",
@@ -196,8 +161,8 @@ const Services = () => {
     {
       icon: Lightbulb,
       title: "Training & Courses",
-      description: "Upskill your team with our professional training programs covering AI development, custom software, and emerging technologies.",
-      features: ["AI Development Courses", "Custom Software Training", "Cybersecurity Awareness", "Digital Transformation Workshops"]
+      description: "Upskill your team with our professional training programmes covering AI, business automation, and data analytics.",
+      features: ["6-Month AI & Automation Programme", "AppSheet & Workspace Training", "Workflow Automation (n8n & RPA)", "Power BI Data Analytics"]
     }
   ];
 
@@ -235,7 +200,7 @@ const Services = () => {
             </div>
 
             <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
-              <TabsList className="grid w-full grid-cols-4 lg:grid-cols-8 h-auto p-1 bg-muted/50">
+              <TabsList className="grid w-full grid-cols-4 lg:grid-cols-7 h-auto p-1 bg-muted/50">
                 {mainServices.map((service) => (
                   <TabsTrigger
                     key={service.id}
@@ -291,7 +256,7 @@ const Services = () => {
               </p>
             </div>
 
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
               {additionalServices.map((service, index) => (
                 <Card key={index} className="p-6 border-0 bg-white hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
                   <div className="w-12 h-12 bg-orange-primary/10 rounded-lg flex items-center justify-center mb-4">
