@@ -10,6 +10,7 @@ import {
   CheckCircle2,
   Briefcase,
   ChevronDown,
+  Laptop,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import SEO from "@/components/SEO";
@@ -376,7 +377,7 @@ const SixMonthProgram = () => {
               6-Month Practical AI, Automation &amp; Data Analytics Course
             </h1>
             <p className="text-base sm:text-lg text-slate-300 max-w-3xl leading-relaxed mb-10">
-              A practical 6-month programme taught by our London team. Spend the first 3 months learning how to build business apps, automate office workflows, and create Power BI reports, followed by a 3-month UK internship working on real projects.
+              A practical 6-month programme taught live online by our UK team. Spend the first 3 months learning how to build business apps, automate office workflows, and create Power BI reports, followed by a 3-month UK internship working on real projects.
             </p>
 
             {/* Structured Key Facts Table (Classic UK Prospectus Style) */}
@@ -409,11 +410,11 @@ const SixMonthProgram = () => {
 
               <div className="p-4 sm:p-5">
                 <div className="flex items-center gap-2 text-xs text-slate-400 uppercase tracking-wider mb-1">
-                  <MapPin className="w-3.5 h-3.5 text-orange-primary" />
+                  <Laptop className="w-3.5 h-3.5 text-orange-primary" />
                   Study Mode
                 </div>
                 <div className="text-sm sm:text-base font-semibold text-white">
-                  London or Live Online
+                  100% Live Online
                 </div>
                 <div className="text-xs text-slate-400 mt-0.5">
                   Taught live by UK-based tutors
@@ -552,21 +553,20 @@ const SixMonthProgram = () => {
                 </div>
               </div>
 
-              {/* Right Column (5 cols): Enrolment & Free Trial Form */}
+              {/* Right Column (5 cols): Free Trial Registration Form */}
               <div className="lg:col-span-5 lg:sticky lg:top-28 space-y-6">
                 <div className="bg-white border border-slate-200 rounded-lg p-6 shadow-xs">
                   <div className="border-b border-slate-200 pb-4 mb-5">
                     <h2 className="text-xl font-bold text-slate-900">
-                      Enrol or Book a Free Trial Class
+                      Book a Free 1-Day Trial Class
                     </h2>
                     <p className="text-sm text-slate-600 mt-1">
-                      You can pay online to book your place straight away, or fill in the form below to join a free 1-day trial session first.
+                      Fill in the form below to join a free 1-day live online trial session and speak with our course advisor.
                     </p>
                   </div>
 
-                  {/* Direct Online Payment Button */}
-                  <div className="mb-6">
-                    {isEnrolled ? (
+                  {isEnrolled && (
+                    <div className="mb-5">
                       <Button
                         asChild
                         className="w-full text-sm h-11 bg-slate-200 hover:bg-slate-300 text-slate-800 rounded-lg font-semibold"
@@ -576,31 +576,8 @@ const SixMonthProgram = () => {
                           Already Enrolled — Go to Student Portal
                         </Link>
                       </Button>
-                    ) : (
-                      <Button
-                        asChild
-                        className="w-full text-sm h-11 bg-orange-primary hover:bg-orange-dark text-white rounded-lg font-semibold"
-                      >
-                        <Link to={`/checkout/${flagshipCourseSlug}`}>
-                          Enrol &amp; Pay Online
-                        </Link>
-                      </Button>
-                    )}
-                    <p className="text-xs text-slate-500 mt-2 text-center">
-                      Pay in full (£351) or in monthly instalments (£195 today + 2 instalments).
-                    </p>
-                  </div>
-
-                  <div className="relative my-6">
-                    <div className="absolute inset-0 flex items-center">
-                      <div className="w-full border-t border-slate-200" />
                     </div>
-                    <div className="relative flex justify-center text-xs uppercase">
-                      <span className="bg-white px-3 text-slate-500 font-medium">
-                        Or enquire / book a free trial
-                      </span>
-                    </div>
-                  </div>
+                  )}
 
                   <CourseRegistrationForm
                     preSelectedCourse={flagshipCourseTitle}

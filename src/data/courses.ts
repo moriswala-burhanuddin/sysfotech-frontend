@@ -745,7 +745,7 @@ export const whyChooseUs = [
   },
   {
     title: "Live Practical Sessions",
-    description: "Interactive live online and classroom sessions",
+    description: "Interactive live online sessions with practical projects",
     icon: PlayCircle,
   },
   {
