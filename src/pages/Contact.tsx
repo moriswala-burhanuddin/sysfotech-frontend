@@ -45,13 +45,24 @@ const Contact = () => {
         source: "website"
       };
 
-      const response = await fetch(`${API_BASE}/inquiries/`, {
+      let response = await fetch(`${API_BASE}/inquiries/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(payload)
       });
+
+      // If the static origin returns 405 (Not Allowed), fallback to API subdomain
+      if (response.status === 405) {
+        response = await fetch('https://api.sysfotech.uk/api/inquiries/', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(payload)
+        });
+      }
 
       if (response.ok) {
         toast({
@@ -71,7 +82,8 @@ const Contact = () => {
           timeline: ""
         });
       } else {
-        throw new Error('Failed to submit inquiry');
+        const errJson = await response.json().catch(() => ({}));
+        throw new Error(errJson.error || errJson.message || 'Failed to submit inquiry');
       }
     } catch (error) {
       console.error('Error submitting form:', error);
