@@ -45,7 +45,7 @@ const Terms = () => {
             <p className="text-muted-foreground">
               In order to resolve a complaint regarding the Site or to receive further information regarding use of the Site, please contact us at:<br/><br/>
               <strong>Sysfotech IT Services</strong><br/>
-              Email: legal@sysfotech.uk
+              Email: info@sysfotech.uk
             </p>
           </section>
         </div>

@@ -50,7 +50,7 @@ const PrivacyPolicy = () => {
             <p className="text-muted-foreground">
               If you have questions or comments about this Privacy Policy, please contact us at:<br/><br/>
               <strong>Sysfotech IT Services</strong><br/>
-              Email: privacy@sysfotech.uk
+              Email: info@sysfotech.uk
             </p>
           </section>
         </div>
