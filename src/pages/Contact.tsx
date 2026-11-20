@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { MapPin, Phone, Mail, Clock, Send, MessageSquare, ArrowRight, CheckCircle, Shield, Headphones } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -6,14 +7,18 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import SEO from "@/components/SEO";
+import { API_BASE } from "@/config";
 
 const Contact = () => {
+  const [searchParams] = useSearchParams();
+  const serviceParam = searchParams.get("service") || "";
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     phone: "",
     company: "",
-    service: "",
+    service: serviceParam,
     message: "",
     budget: "",
     timeline: ""
@@ -40,7 +45,7 @@ const Contact = () => {
         source: "website"
       };
 
-      const response = await fetch('https://sysfotech.uk/api/inquiries/', {
+      const response = await fetch(`${API_BASE}/inquiries/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -92,7 +97,7 @@ const Contact = () => {
     {
       icon: Mail,
       title: "Email Address",
-      details: ["info@sysfotech.uk", "support@sysfotech.uk"]
+      details: ["info@sysfotech.uk"]
     },
     {
       icon: Clock,
@@ -102,16 +107,15 @@ const Contact = () => {
   ];
 
   const services = [
-    "Web Development",
+    "Website Development",
+    "Website Design & UI/UX",
     "Mobile App Development",
-    "UI/UX Design",
-    "Digital Marketing & SEO",
-    "B2B SaaS Solutions",
-    "Cybersecurity",
-    "Cloud Solutions",
-    "IT Service & Support",
-    "Consultation",
-    "Other"
+    "ERP & CRM Development",
+    "SEO Services",
+    "B2B SaaS SEO & Marketing",
+    "Support & Maintenance",
+    "Social Media Management",
+    "Training & Courses"
   ];
 
   const budgetRanges = [
