@@ -95,7 +95,7 @@ const HeroSection = () => {
               <Button asChild className="h-14 px-8 text-lg rounded-full bg-white text-black hover:bg-gray-200 hover:scale-105 transition-all font-bold tracking-tight">
                 <Link to="/contact">Initialize Project</Link>
               </Button>
-              <Button asChild variant="outline" className="h-14 px-8 text-lg rounded-full border-white/25 text-white hover:bg-white/10 hover:text-white hover:scale-105 transition-all font-bold tracking-tight">
+              <Button asChild variant="outline" className="h-14 px-8 text-lg rounded-full border border-white/30 text-white bg-transparent hover:bg-white/10 hover:border-white hover:text-white hover:scale-105 transition-all font-bold tracking-tight">
                 <Link to="/services">Explore IT Services</Link>
               </Button>
             </div>
@@ -814,7 +814,7 @@ const Home = () => {
             </div>
 
             <div className="mt-12 text-center md:hidden">
-              <Button asChild variant="outline" className="border-white/20 text-white">
+              <Button asChild variant="outline" className="border-white/20 text-white hover:bg-white/10 hover:text-white bg-transparent">
                 <Link to="/blog">View All Posts <ArrowRight className="ml-2 w-4 h-4" /></Link>
               </Button>
             </div>
