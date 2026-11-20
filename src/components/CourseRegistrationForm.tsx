@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTrigger, DialogTitle, DialogDescription, DialogHeader } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
-import { Send, CheckCircle2, ChevronDown, CheckCircle, Users, GraduationCap, Briefcase, Compass, Sparkles } from "lucide-react";
+import { Send, CheckCircle2, ChevronDown, CheckCircle, Users, GraduationCap, Briefcase, Sparkles, MessageSquare } from "lucide-react";
 import { allCourseOptions } from "@/data/courses";
 import { motion, AnimatePresence } from "framer-motion";
+import { API_BASE } from "@/config";
 
 // ---------- Form Section Accordion ----------
 interface FormSectionProps {
@@ -207,7 +209,13 @@ export const CourseRegistrationForm = ({ preSelectedCourse, onSuccess }: CourseR
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
-    mobile: "",
+    whatsapp: "",
+    country: "",
+    city: "",
+    qualification: "",
+    age: "",
+    employmentStatus: "",
+    whyWantCourse: "",
     selectedCourses: preSelectedCourse ? [preSelectedCourse] : ([] as string[]),
     wantDemo: "",
     demoDate: "",
@@ -223,7 +231,7 @@ export const CourseRegistrationForm = ({ preSelectedCourse, onSuccess }: CourseR
     }
   }, [preSelectedCourse]);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
@@ -235,10 +243,10 @@ export const CourseRegistrationForm = ({ preSelectedCourse, onSuccess }: CourseR
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!formData.fullName || !formData.email || !formData.mobile) {
+    if (!formData.fullName.trim() || !formData.email.trim() || !formData.whatsapp.trim()) {
       toast({
         title: "Required Fields Missing",
-        description: "Please enter your Full Name, Email and Mobile Number to continue.",
+        description: "Please enter your Full Name, Email and WhatsApp number to continue.",
         variant: "destructive",
       });
       setOpenSection(0);
@@ -251,7 +259,7 @@ export const CourseRegistrationForm = ({ preSelectedCourse, onSuccess }: CourseR
         description: "Please select at least one course.",
         variant: "destructive",
       });
-      setOpenSection(1);
+      setOpenSection(2);
       return;
     }
 
@@ -261,40 +269,79 @@ export const CourseRegistrationForm = ({ preSelectedCourse, onSuccess }: CourseR
         description: "Please agree to receive course information before submitting.",
         variant: "destructive",
       });
-      setOpenSection(3);
+      setOpenSection(4);
       return;
     }
 
     setIsSubmitting(true);
 
     try {
-      const response = await fetch("https://formspree.io/f/meeydkgo", {
+      // 1. Submit to Sysfotech Backend API (saves to DB and notifies owner via email)
+      const response = await fetch(`${API_BASE}/course-registrations/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Accept": "application/json"
+          "Accept": "application/json",
         },
         body: JSON.stringify({
-          "Full Name": formData.fullName,
-          "Email": formData.email,
-          "Mobile (WhatsApp)": formData.mobile,
-          "Selected Courses": formData.selectedCourses.join(", "),
-          "Wants Free Demo": formData.wantDemo,
-          "Demo Date": formData.demoDate,
-          "Consent Given": formData.consent ? "Yes" : "No",
+          fullName: formData.fullName,
+          email: formData.email,
+          whatsapp: formData.whatsapp,
+          country: formData.country,
+          city: formData.city,
+          qualification: formData.qualification,
+          age: formData.age,
+          employmentStatus: formData.employmentStatus,
+          whyWantCourse: formData.whyWantCourse,
+          selectedCourses: formData.selectedCourses,
+          wantDemo: formData.wantDemo,
+          demoDate: formData.demoDate,
+          consent: formData.consent,
         }),
       });
 
+      // 2. Also send backup to Formspree
+      try {
+        fetch("https://formspree.io/f/meeydkgo", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+          },
+          body: JSON.stringify({
+            "Full Name": formData.fullName,
+            "Email": formData.email,
+            "WhatsApp number with country code": formData.whatsapp,
+            "Country of residence": formData.country,
+            "City": formData.city,
+            "Qualification": formData.qualification,
+            "Age": formData.age,
+            "Are you working or studying?": formData.employmentStatus,
+            "Why you want this course": formData.whyWantCourse,
+            "Selected Courses": formData.selectedCourses.join(", "),
+            "Wants Free Demo": formData.wantDemo,
+            "Demo Date": formData.demoDate,
+            "Consent Given": formData.consent ? "Yes" : "No",
+          }),
+        }).catch(() => {});
+      } catch {}
+
       if (response.ok) {
         toast({
-          title: "Enrolment Application Received",
-          description: "Your training application has been submitted successfully. We will be in touch shortly!",
+          title: "Registration Received",
+          description: "Your application and questionnaire have been submitted. Our admissions team has been notified and a confirmation email was sent to you.",
         });
 
         setFormData({
           fullName: "",
           email: "",
-          mobile: "",
+          whatsapp: "",
+          country: "",
+          city: "",
+          qualification: "",
+          age: "",
+          employmentStatus: "",
+          whyWantCourse: "",
           selectedCourses: preSelectedCourse ? [preSelectedCourse] : [],
           wantDemo: "",
           demoDate: "",
@@ -306,9 +353,10 @@ export const CourseRegistrationForm = ({ preSelectedCourse, onSuccess }: CourseR
           onSuccess();
         }
       } else {
+        const errorData = await response.json().catch(() => ({}));
         toast({
           title: "Submission Error",
-          description: "There was a problem submitting your form. Please try again.",
+          description: errorData.error || errorData.message || "There was a problem submitting your form. Please check your inputs.",
           variant: "destructive",
         });
       }
@@ -325,14 +373,14 @@ export const CourseRegistrationForm = ({ preSelectedCourse, onSuccess }: CourseR
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4 max-w-3xl mx-auto" id="enrolment-form">
-      {/* Step 1: Personal Information */}
+      {/* Step 1: Personal & Contact Information */}
       <FormSection
-        title="Personal Information"
+        title="Personal & Contact Information"
         step={1}
         icon={<Users className="w-4 h-4 text-slate-500" />}
         isOpen={openSection === 0}
         onToggle={() => setOpenSection(openSection === 0 ? -1 : 0)}
-        isCompleted={!!(formData.fullName && formData.email && formData.mobile)}
+        isCompleted={!!(formData.fullName && formData.email && formData.whatsapp)}
       >
         <div className="space-y-4">
           <div>
@@ -343,7 +391,7 @@ export const CourseRegistrationForm = ({ preSelectedCourse, onSuccess }: CourseR
               name="fullName"
               value={formData.fullName}
               onChange={handleInputChange}
-              placeholder="First and last name"
+              placeholder="e.g. John Doe"
               className="h-12 rounded-lg border-slate-200 focus:border-orange-primary focus:ring-orange-primary/20"
             />
           </div>
@@ -362,29 +410,112 @@ export const CourseRegistrationForm = ({ preSelectedCourse, onSuccess }: CourseR
           </div>
           <div>
             <label className="block text-sm font-medium text-slate-700 mb-1.5">
-              Mobile Number (WhatsApp) *
+              WhatsApp number with country code *
             </label>
             <Input
-              name="mobile"
-              value={formData.mobile}
+              name="whatsapp"
+              value={formData.whatsapp}
               onChange={handleInputChange}
-              placeholder="+44 ..."
+              placeholder="+44 7123 456789"
               className="h-12 rounded-lg border-slate-200 focus:border-orange-primary focus:ring-orange-primary/20"
+            />
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-1.5">
+                Country of residence
+              </label>
+              <Input
+                name="country"
+                value={formData.country}
+                onChange={handleInputChange}
+                placeholder="e.g. United Kingdom"
+                className="h-12 rounded-lg border-slate-200 focus:border-orange-primary focus:ring-orange-primary/20"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-1.5">
+                City
+              </label>
+              <Input
+                name="city"
+                value={formData.city}
+                onChange={handleInputChange}
+                placeholder="e.g. London"
+                className="h-12 rounded-lg border-slate-200 focus:border-orange-primary focus:ring-orange-primary/20"
+              />
+            </div>
+          </div>
+        </div>
+      </FormSection>
+
+      {/* Step 2: Academic & Employment Background */}
+      <FormSection
+        title="Background & Profile"
+        step={2}
+        icon={<GraduationCap className="w-4 h-4 text-slate-500" />}
+        isOpen={openSection === 1}
+        onToggle={() => setOpenSection(openSection === 1 ? -1 : 1)}
+        isCompleted={!!(formData.qualification || formData.employmentStatus)}
+      >
+        <div className="space-y-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-1.5">
+                Qualification
+              </label>
+              <Input
+                name="qualification"
+                value={formData.qualification}
+                onChange={handleInputChange}
+                placeholder="e.g. Bachelor's / High School / Diploma"
+                className="h-12 rounded-lg border-slate-200 focus:border-orange-primary focus:ring-orange-primary/20"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-1.5">
+                Age
+              </label>
+              <Input
+                name="age"
+                value={formData.age}
+                onChange={handleInputChange}
+                placeholder="e.g. 24"
+                className="h-12 rounded-lg border-slate-200 focus:border-orange-primary focus:ring-orange-primary/20"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-2.5">
+              Are you working or studying?
+            </label>
+            <RadioGroup
+              name="employmentStatus"
+              options={[
+                { label: "Student", value: "Student" },
+                { label: "Employed", value: "Employed" },
+                { label: "Self-employed", value: "Self-employed" },
+                { label: "Unemployed", value: "Unemployed" },
+              ]}
+              selected={formData.employmentStatus}
+              onChange={(val) => setFormData((prev) => ({ ...prev, employmentStatus: val }))}
+              columns={2}
             />
           </div>
         </div>
       </FormSection>
 
-      {/* Step 2: Course Selection */}
+      {/* Step 3: Course Selection & Motivation */}
       <FormSection
-        title="Course Selection"
-        step={2}
+        title="Course & Motivation"
+        step={3}
         icon={<Briefcase className="w-4 h-4 text-slate-500" />}
-        isOpen={openSection === 1}
-        onToggle={() => setOpenSection(openSection === 1 ? -1 : 1)}
+        isOpen={openSection === 2}
+        onToggle={() => setOpenSection(openSection === 2 ? -1 : 2)}
         isCompleted={formData.selectedCourses.length > 0}
       >
-        <div className="space-y-4">
+        <div className="space-y-5">
           <div>
             <label className="block text-sm font-medium text-slate-700 mb-3">
               Select Your Course of Choice *
@@ -396,16 +527,30 @@ export const CourseRegistrationForm = ({ preSelectedCourse, onSuccess }: CourseR
               columns={2}
             />
           </div>
+
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-1.5">
+              Why you want this course
+            </label>
+            <Textarea
+              name="whyWantCourse"
+              value={formData.whyWantCourse}
+              onChange={handleInputChange}
+              rows={4}
+              placeholder="Tell us what you hope to achieve from this course, your career goals, or any specific skills you wish to learn..."
+              className="rounded-lg border-slate-200 focus:border-orange-primary focus:ring-orange-primary/20 text-sm leading-relaxed"
+            />
+          </div>
         </div>
       </FormSection>
 
-      {/* Step 3: Demo Session */}
+      {/* Step 4: Demo Session */}
       <FormSection
         title="1-Day Free Demo Session"
-        step={3}
+        step={4}
         icon={<Sparkles className="w-4 h-4 text-slate-500" />}
-        isOpen={openSection === 2}
-        onToggle={() => setOpenSection(openSection === 2 ? -1 : 2)}
+        isOpen={openSection === 3}
+        onToggle={() => setOpenSection(openSection === 3 ? -1 : 3)}
         isCompleted={!!formData.wantDemo}
       >
         <div className="space-y-4">
@@ -445,13 +590,13 @@ export const CourseRegistrationForm = ({ preSelectedCourse, onSuccess }: CourseR
         </div>
       </FormSection>
 
-      {/* Step 4: Consent & Send */}
+      {/* Step 5: Consent & Send */}
       <FormSection
         title="Consent & Submit"
-        step={4}
+        step={5}
         icon={<Send className="w-4 h-4 text-slate-500" />}
-        isOpen={openSection === 3}
-        onToggle={() => setOpenSection(openSection === 3 ? -1 : 3)}
+        isOpen={openSection === 4}
+        onToggle={() => setOpenSection(openSection === 4 ? -1 : 4)}
         isCompleted={formData.consent}
       >
         <div className="space-y-6">

@@ -3,8 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/components/ui/use-toast';
 import {
   Users, BookOpen, CreditCard, Tag, GraduationCap,
-  Receipt, LogOut, Trash2, Search, Plus, X, Menu, Edit, Save, Eye, ChevronRight, Mail
+  Receipt, LogOut, Trash2, Search, Plus, X, Menu, Edit, Save, Eye, ChevronRight, Mail, ClipboardList
 } from 'lucide-react';
+
 import { motion, AnimatePresence } from 'framer-motion';
 
 import { API_BASE } from '../../config';
@@ -17,10 +18,12 @@ const TABS = [
   { id: 'transactions', label: 'Transactions', icon: Receipt, endpoint: 'transactions', desc: 'Monitor successful payments' },
   { id: 'checkout-sessions', label: 'Checkouts', icon: CreditCard, endpoint: 'checkout-sessions', desc: 'Track pending and completed checkouts' },
   { id: 'coupons', label: 'Coupons', icon: Tag, endpoint: 'coupons', desc: 'Manage discount codes' },
+  { id: 'course-registrations-list', label: 'Registrations', icon: ClipboardList, endpoint: 'course-registrations-list', desc: 'View student course registration applications & questionnaires' },
 ];
 
 const SCHEMAS: Record<string, any> = {
   students: { name: '', email: '', phone_number: '' },
+  'course-registrations-list': { full_name: '', email: '', whatsapp: '', country: '', city: '', qualification: '', age: '', employment_status: '', why_want_course: '', selected_courses: '' },
   courses: {
     title: '',
     slug: '',
