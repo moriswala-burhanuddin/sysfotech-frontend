@@ -74,6 +74,7 @@ const StripeCheckoutForm = ({ course, studentName, email, phone, onSuccess, isPr
     }
 
     setIsProcessing(true);
+    let paymentIntentId: string | null = null;
 
     try {
       const token = localStorage.getItem("magic_link_token");
@@ -97,6 +98,7 @@ const StripeCheckoutForm = ({ course, studentName, email, phone, onSuccess, isPr
       const data = await res.json();
 
       if (!res.ok) throw new Error(data.error || "Failed to create payment intent");
+      paymentIntentId = data.paymentIntentId;
 
       // 2. Confirm Payment with Stripe
       const cardElement = elements.getElement(CardElement);
@@ -122,6 +124,14 @@ const StripeCheckoutForm = ({ course, studentName, email, phone, onSuccess, isPr
 
       onSuccess(data.magicLinkToken);
     } catch (err: any) {
+      // The card was not charged: tell the backend so no unpaid customer stays in Stripe
+      if (paymentIntentId) {
+        fetch(`${API_BASE}/stripe/abort/`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ payment_id: paymentIntentId })
+        }).catch(() => {});
+      }
       toast({ title: "Payment Failed", description: err.message, variant: "destructive" });
       setIsProcessing(false);
     }
