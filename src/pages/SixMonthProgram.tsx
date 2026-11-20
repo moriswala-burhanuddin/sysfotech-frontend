@@ -553,20 +553,21 @@ const SixMonthProgram = () => {
                 </div>
               </div>
 
-              {/* Right Column (5 cols): Free Trial Registration Form */}
+              {/* Right Column (5 cols): Enrolment & Free Trial Form */}
               <div className="lg:col-span-5 lg:sticky lg:top-28 space-y-6">
                 <div className="bg-white border border-slate-200 rounded-lg p-6 shadow-xs">
                   <div className="border-b border-slate-200 pb-4 mb-5">
                     <h2 className="text-xl font-bold text-slate-900">
-                      Book a Free 1-Day Trial Class
+                      Enrol or Book a Free Trial Class
                     </h2>
                     <p className="text-sm text-slate-600 mt-1">
-                      Fill in the form below to join a free 1-day live online trial session and speak with our course advisor.
+                      You can pay online to book your place straight away, or fill in the form below to join a free 1-day trial session first.
                     </p>
                   </div>
 
-                  {isEnrolled && (
-                    <div className="mb-5">
+                  {/* Direct Online Payment Button */}
+                  <div className="mb-6">
+                    {isEnrolled ? (
                       <Button
                         asChild
                         className="w-full text-sm h-11 bg-slate-200 hover:bg-slate-300 text-slate-800 rounded-lg font-semibold"
@@ -576,8 +577,31 @@ const SixMonthProgram = () => {
                           Already Enrolled — Go to Student Portal
                         </Link>
                       </Button>
+                    ) : (
+                      <Button
+                        asChild
+                        className="w-full text-sm h-11 bg-orange-primary hover:bg-orange-dark text-white rounded-lg font-semibold"
+                      >
+                        <Link to={`/checkout/${flagshipCourseSlug}`}>
+                          Enrol &amp; Pay Online
+                        </Link>
+                      </Button>
+                    )}
+                    <p className="text-xs text-slate-500 mt-2 text-center">
+                      Pay in full (£351) or in monthly instalments (£195 today + 2 instalments).
+                    </p>
+                  </div>
+
+                  <div className="relative my-6">
+                    <div className="absolute inset-0 flex items-center">
+                      <div className="w-full border-t border-slate-200" />
                     </div>
-                  )}
+                    <div className="relative flex justify-center text-xs uppercase">
+                      <span className="bg-white px-3 text-slate-500 font-medium">
+                        Or enquire / book a free trial
+                      </span>
+                    </div>
+                  </div>
 
                   <CourseRegistrationForm
                     preSelectedCourse={flagshipCourseTitle}
